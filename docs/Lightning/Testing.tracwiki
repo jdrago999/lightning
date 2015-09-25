@@ -1,0 +1,33 @@
+== Running specific tests ==
+To run a single test method, here is the format:
+
+
+{{{
+nosetests ./lightning/handlers/test_api.py:TestApiOneHandler.test_get_on_loopback
+}}}
+
+
+where test_api.py is a test file, TestApiOneHandler is a test case, and test_get_on_loopback is a test function
+== Test Coverage ==
+To run test the test coverage tool provided by nosetests:
+
+1)
+{{{
+pip install coverage
+}}}
+
+2)
+{{{
+nosetests --with-coverage --cover-html --cover-package=lightning
+}}}
+
+
+This will generate HTML in a "cover" directory in the current folder. Simply open the index.html page in a browser to view our current code coverage.
+
+== Test Output ==
+{{{
+nosetests --nocapture
+}}}
+This will display all output including stdout/print statements in the test results.
+
+More information on unittest can be found at http://docs.python.org/library/unittest.html

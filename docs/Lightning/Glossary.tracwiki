@@ -1,0 +1,28 @@
+ * '''Authorization:'''  A collection of all the information needed to communicate with a service (such as FB) as a given user. This is uniquely identified by the service name, the client name, and the user's userid on the service. It contains whatever else is necessary to communicate with that service on behalf of that user with the permissions required by that client. It also tracks when tokens (or whatever is used to communicate) expire and are re-authorized. It is identified by a unique GUID (also called a 'key') so that the client (e.g.,  the client) can use it. The GUID is stored in the client. The authorization itself is stored **only** in Lightning.
+
+ * '''Daemon:''' A daemon is a generic term for a program that is running continuously on a computer. For example, anti-virus software is a daemon on your Windows PC. In Lightning, the daemon is the back-end processing that polls the various services every few minutes to see if any of the values for a given user have changed. If anything changes, that change is stored in the Lightning database and is available for the "Web" side to use.
+  * **Note**: Not all information that is collected from a service is done via the daemons.
+
+ * '''Data point:''' A piece of information in the datastore.  Example:  num_friends for Fred's FB account at a specific moment in time.
+
+ * '''Data provider function:'''  A method that retrieves a piece of information from Lightning for use in a view.
+
+ * '''Echo Data-point:''' In Lightning, this is a data point that is not specifically about you, but required collating several different data points to arrive at a derivative number. E.g.: The friend who commented on you the most within a given timeframe.
+
+ * '''Handler:''' A process invoked on the Lightning web side to do something. These correspond directly to a web endpoint that the client (e.g.,  the client) would call via REST.
+
+ * '''Integration test:''' A test that verifies a full use-case from the consumer's perspective. So, a round-trip authorization of a user against a service using the web endpoints.
+
+ * '''Loopback:''' A set of services in Lightning that exist solely for the purpose of testing.
+
+ * '''Method:'''  Generic term for an operation defined within a service. Just about anything Lightning or  the client does is accomplished by, eventually, calling Method X in service Y.
+
+ * '''Permission (external service):''' After a user authenticates with an external service such as FB, they have the option to grant permissions that allow Lightning services to do things with their account on that service.  Permissions vary by service; the user may revoke any or all of them at any time.
+
+ * '''Service:''' A collection of methods that provide access to data in a 3rd party external API. Currently, there is only
+
+ * '''Service object:''' What we're calling the services that are used for authentication and authorization operations.
+
+ * '''Unit test:''' A test that verifies a very limited and specific (usually small) piece of functionality. These tests usually verify things at a level far below what the user of the product would use, often by directly calling methods on objects.
+
+ * '''View:''' A collection of service/method pairs, in a specific order.

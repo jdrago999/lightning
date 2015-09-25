@@ -1,0 +1,67 @@
+== Finalize Authorization for a Service ==
+
+=== Purpose ===
+
+To finalize the authentication / authorization process.
+
+For all v1 services, this will be an OAuth authorization. If this will not be sufficient for a later service, then this process will be revisited.
+
+Note: All Service method and View invocations will need an OAuth token in order to function. So, this process will need to be called before [[Lightning/API/InvokeAPIFunction|Invoke a function on an Service]].
+
+Please read [[Lightning/API#authnz|Authentication Against and Authorization with a Service]] for an in-depth discussion of this process.
+
+=== Endpoint ===
+
+{{{POST /auth}}}
+
+=== Inputs ===
+
+* service - service name (Facebook, LinkedIn, etc)
+* redirect_uri - this is the URI in the client that the service will call once authorization is completed (successful or not). This must be the same as the parameter in [[Lightning/API/InitiateAuthorization|Retrieve the Authorization URI for an API]] above.
+* any and all other parameters provided by the service to the redirect_uri
+
+=== Outputs ===
+
+* 201: Resource Created - If authorization is successful with a Location header value of:
+
+{{{
+Location: /auth/<guid>
+}}}
+
+and a response body of:
+{{{
+{
+    'guid': <guid>
+}
+}}}
+
+=== Errors ===
+
+* 404: Not Found - If the service name is not recognized with a response body of:
+{{{
+{
+  "error": "Service '<service>' unknown"
+}
+}}}
+* 400: Bad Request - If any required input is missing with a response body of:
+{{{
+{
+    'error': "Missing parameters 'param1', 'param2'"
+}
+}}}
+* 401: Not Authorized - If the authorization process fails for any reason with a response body of:
+{{{
+{
+    'error': 'Unable to authorize user: Error unknown'
+}
+}}}
+* 401: Not Authorized - If the parameters provided indicate that either authentication failed at the service's side or authorization was not granted with a response body of:
+{{{
+{
+    'error': 'Unable to authorize user: <error>'
+}
+}}}
+
+=== Side Effects ===
+
+Any necessary tokens will be stored, keyed to the client's name, service name, and service_user_id.

@@ -1,0 +1,111 @@
+= Loopback =
+
+This is a service that exists for testing and verification purposes. It is used in the Lightning unit-tests and can be used by clients to determine functionality.
+
+== Authorization ==
+
+The loopback services require an additional parameter when retrieving the authorization URL (via {{{GET /auth}}}) - a username. This will allow the client to use the loopback service for all testing needs. The loopback service will guarantee that if the same username is used in multiple invocations during the same test, the same GUID will be returned.
+
+== Methods ==
+
+=== broken ===
+
+This method deliberately induces a 500 error, returning the following:
+
+{{{
+{
+    'error': 'This method is intentionally broken'
+}
+}}}
+
+=== fortytwo ===
+
+{{{
+{
+    'data': 'fortytwo'
+}
+}}}
+
+=== fortytwo_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'data': <number1> },
+        { 'timestamp': <timestamp2>, 'data': <number2> },
+    ]
+}
+}}}
+
+=== ten ===
+
+{{{
+{
+    'num': '10'
+}
+}}}
+
+=== ten_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== profile ===
+
+{{{
+{
+    'first_name': <random string>,
+    'last_name': <random string>,
+    'name': <first_name> <space> <last_name>,
+    'email': <random valid email>
+}
+}}}
+
+=== random ===
+
+{{{
+{
+    'data': <a random, 6 digit, value from 1 to 999999 as a string>
+}
+}}}
+
+=== random_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'data': <number1> },
+        { 'timestamp': <timestamp2>, 'data': <number2> },
+    ]
+}
+}}}
+
+=== time ===
+
+{{{
+{
+    'data': <the current time in seconds since the epoch as a string>
+}
+}}}
+
+=== sleep ===
+
+{{{
+{
+    'data': <How long did we sleep? This can be specified in the data parameter.>
+}
+}}}
+
+=== whoami ===
+
+{{{
+{
+    'data': <the client name>
+}
+}}}

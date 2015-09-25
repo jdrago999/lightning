@@ -1,0 +1,57 @@
+= Rate Limits =
+
+== Per-token ==
+||= '''Service''' =||= '''Policy''' =||= '''Source''' =||
+||= Blogger =|| TBD || [http://google.com/ TBD] ||
+||= Etsy =|| 10 requests per user per second || [http://www.etsy.com/developers/documentation/getting_started/api_basics#section_rate_limiting Etsy]||
+||= Facebook =||  600 calls every 10 minutes || [http://stackoverflow.com/questions/8805316/facebook-graph-api-rate-limit-and-batch-requests StackOverflow] ||
+||= Foursquare =||500 authenticated requests per hour per OAuth token|| [https://developer.foursquare.com/overview/ratelimits Foursquare] ||
+||= Flickr =|| TBD || [http://google.com/ TBD] ||
+||= GooglePlus =|| TBD || [http://google.com/ TBD] ||
+||= Instagram =||  You are limited to 5000 requests per hour per access_token (for authenticated calls) or client_id overall. (for non-authenticated calls) || [http://instagram.com/developer/endpoints/ Instagram] ||
+||= LinkedIn =|| Get Network Updates, 500k; Connections, 300 || [https://developer.linkedin.com/documents/throttle-limits LinkedIn] ||
+||= Reddit =|| TBD || [http://google.com/ TBD] ||
+||= Runkeeper =||Cannot find the documented response, but it was reported in the forum that "Rate limits have been increased ten-fold.  Also, they now apply per-user, per-resource, per-app, per-HTTP method." || [https://groups.google.com/forum/?fromgroups=#!topic/HealthGraph/xeBxPltji0I Runkeeper] ||
+||= SoundCloud =|| TBD || [http://google.com/ TBD] ||
+||= Twitter =|| 15 calls every 15 minutes for most calls:  * for statuses/mentions_timeline is 15 calls/15 minutes * for statuses/user_timeline 180 calls/15 minutes || [https://dev.twitter.com/docs/rate-limiting/1.1 Twitter] ||
+||= Vimeo =|| TBD || [http://google.com/ TBD] ||
+||= WordPress =|| TBD || [http://google.com/ TBD] ||
+||= Youtube =||No specific amount documented, but definitely can get "too_many_recent_calls" response back || [https://developers.google.com/youtube/faq#operation_limits Youtube] ||
+
+
+== Application/IP-level ==
+||= '''Service''' =||= '''Policy''' =||= '''Source''' =||
+||= Behance =|| 150 requests per hour || [http://www.behance.net/dev/api/endpoints/ Behance] ||
+||= Blogger =|| TBD || [http://google.com/ TBD] ||
+||= Etsy =|| 10,000 requests per day || [http://www.etsy.com/developers/documentation/getting_started/api_basics#section_rate_limiting Etsy]||
+||= Facebook =|| TBD || [http://google.com/ TBD] ||
+||= Flickr =|| TBD || [http://google.com/ TBD] ||
+||= Foursquare =||5,000 requests per hour|| [https://developer.foursquare.com/overview/ratelimits Foursquare] ||
+||= GooglePlus =|| TBD || [http://google.com/ TBD] ||
+||= Instagram =||  You are limited to 5000 requests per hour per access_token (for authenticated calls) or client_id overall. (for non-authenticated calls) || [http://instagram.com/developer/endpoints/ Instagram] ||
+||= LinkedIn =|| Get Network Updates, 500k; Connections, 20k; Current User's Standard Profile, 100k || [https://developer.linkedin.com/documents/throttle-limits LinkedIn] ||
+||= Reddit =|| 30 requests per minute || [https://github.com/reddit/reddit/wiki/API Reddit] ||
+||= RunKeeper =|| TBD || [http://google.com/ TBD] ||
+||= SoundCloud =|| TBD || [http://google.com/ TBD] ||
+||= Twitter =|| TBD || [http://google.com/ TBD] ||
+||= Vimeo =|| TBD || [http://google.com/ TBD] ||
+||= WordPress =|| TBD || [http://google.com/ TBD] ||
+||= Youtube =||No specific amount documented, but definitely can get "too_many_recent_calls" response back || [https://developers.google.com/youtube/faq#operation_limits Youtube] ||
+
+
+== Current Lightning Solution ==
+||= '''Service''' =||= '''Enqueue Time''' =||= '''Max Simultaneous Calls''' =||
+||= Blogger =|| 60 minutes || Unlimited ||
+||= Facebook =|| 60 minutes || 10 ||
+||= Foursquare =|| 60 minutes || Unlimited ||
+||= Flickr =|| 60 minutes || Unlimited ||
+||= GooglePlus =|| 60 minutes || Unlimited ||
+||= Instagram =|| 60 minutes || Unlimited ||
+||= LinkedIn =|| 60 minutes || Unlimited ||
+||= Reddit =|| 60 minutes || Unlimited ||
+||= RunKeeper =|| 60 minutes || Unlimited ||
+||= SoundCloud =|| 60 minutes || Unlimited ||
+||= Twitter =|| 60 minutes || Unlimited ||
+||= Vimeo =|| 60 minutes || Unlimited ||
+||= WordPress =|| 60 minutes || Unlimited ||
+||= Youtube =|| 60 minutes || Unlimited ||

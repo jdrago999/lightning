@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/jquery-ui-1.8.16.custom.min.js" type="text/javascript"></script>
+    <script src="/js/jquery-ui-timepicker-addon.js" type="text/javascript"></script>
+    <script src="/js/highlight.pack.js" type="text/javascript"></script>
+    <script src="/js/jquery.linkify.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/smoothness/jquery-ui-1.8.16.custom.css" />
+    <link rel="stylesheet" type="text/css" href="/css/tomorrow.css" />
+    <title>{% block title %}console{% end %}</title>
+    <script>
+    function redirect(location) {
+        document.location = 'https://' + document.domain + ':' + document.location.port + '/' + location;
+        return false;
+    }
+    $(document).ready(function() {
+        hljs.initHighlightingOnLoad();
+        $('code').linkify({
+            target: "_blank"
+        });
+        var qs = (function(a) {
+            if (a == "") return {};
+            var b = {};
+            for (var i = 0; i < a.length; ++i)
+            {
+                var p=a[i].split('=');
+                if (p.length != 2) continue;
+                b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+            }
+            return b;
+        })(window.location.search.substr(1).split('&'));
+
+        // Zero-Pad our numbers for TimePicker.
+        var zeroPad = (function(num, places) {
+            var zero = places - num.toString().length + 1;
+            return Array(+(zero > 0 && zero)).join("0") + num;
+        });
+
+        // Get date components we need.
+        var getDateTime = (function(offset) {
+            offset = typeof offset !== "undefined" ? offset : 0;
+            var d = new Date();
+            d.setDate(d.getDate() + offset);
+            return {
+                'year': d.getFullYear(),
+                'month': d.getMonth() + 1,
+                'day': d.getDate(),
+                'hour': d.getHours(),
+                'minute': d.getMinutes(),
+                'timestamp': Math.round(d.getTime() / 1000),
+            }
+        });
+
+        // Get date time string for interval field.
+        var getDateTimeStr = (function(d) {
+            return zeroPad(d['month'], 2) + '/' + zeroPad(d['day'], 2) + '/' + d['year'] + ' ' + zeroPad(d['hour'], 2) + ":" + zeroPad(d['minute'], 2);
+        });
+
+        // Init our datetimepickers.
+        var setPicker = (function(input, d) {
+            var d_str = getDateTimeStr(d);
+            input.datetimepicker({
+                ampm: false,
+                hour: d['hour'],
+                minute: d['minute'],
+            });
+            input.data('timestamp', d['timestamp']);
+            input.val(d_str);
+        });
+
+        var dateTimeStamp = (function(d) {
+            d = d.split('/');
+            var month = parseInt(d[0], 10) - 1;
+            var day = parseInt(d[1], 10);
+            var year_and_time = d[2].split(' ');
+            var year = parseInt(year_and_time[0], 10)
+            var time = year_and_time[1].split(':');
+            var hour = parseInt(time[0], 10);
+            var minute = parseInt(time[1], 10);
+            var date = new Date(year, month, day, hour, minute);
+            return Math.round(date.getTime() / 1000);
+        });
+
+        var updateIntervalLinks = (function() {
+            $('a.view, a:contains("interval")').each(function() {
+                    var start = $('#start').data('timestamp');
+                    var end = $('#end').data('timestamp');
+                    $(this).data('start', start);
+                    $(this).data('end', end);
+            });
+            $('a.view, a:contains("person")').each(function() {
+                    var start = $('#start').data('timestamp');
+                    var end = $('#end').data('timestamp');
+                    $(this).data('start', start);
+                    $(this).data('end', end);
+            });
+        });
+        // Update the method select text with the method from the QS.
+        if(qs['method']) {
+            $("#method option:contains('" + qs['method'] + "')").attr('selected', 'seletected');
+        }
+        if(qs['postdata']) {
+            $('#postdata').text(qs['postdata']);
+        }
+        // Update the path input text with the path from the QS.
+        path_input = $('#path');
+        path_url = qs['path'];
+        if(path_input && path_url) {
+            path_input[0].value = path_url;
+        }
+        // Initialize our interval value datepicker.
+        var yesterday = getDateTime(-1);
+        var today = getDateTime();
+        // Handle time change event.
+        $('#start, #end').change(function() {
+            // Convert time to timestamp.
+            var start = $('#start').val();
+            var end = $('#end').val();
+            var start_time = dateTimeStamp(start);
+            var end_time = dateTimeStamp(end);
+            // Store in data attribute.
+            $('#start').data('timestamp', start_time);
+            $('#end').data('timestamp', end_time);
+            // Update links.
+            updateIntervalLinks();
+        });
+
+        $('a.view, a:contains("interval")').click(function() {
+            href = $(this).attr('href');
+            start = $(this).data('start');
+            end = $(this).data('end');
+            href += encodeURIComponent('&start=' + start + '&end=' + end
+            );
+            $(this).attr('href', href);
+        });
+        $('a.view, a:contains("person")').click(function() {
+            href = $(this).attr('href');
+            start = $(this).data('start');
+            end = $(this).data('end');
+            href += encodeURIComponent('&start=' + start + '&end=' + end
+            );
+            $(this).attr('href', href);
+        });
+        setPicker($('#start'), yesterday);
+        setPicker($('#end'), today);
+        updateIntervalLinks();
+    });
+    </script>
+  </head>
+  <body>
+    <div class="row">
+        {% block body %}<h1>Fill me in</h1>{% end %}
+    </div>
+  </body>
+</html>

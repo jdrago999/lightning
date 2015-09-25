@@ -1,0 +1,29 @@
+= Google+ =
+
+== Methods ==
+
+=== profile ===
+
+See [wiki:Lightning/Profile Profile]
+
+
+=== num_following===
+
+The number of people you are following across all of your circles.
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_following_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}

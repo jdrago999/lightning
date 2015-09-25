@@ -1,0 +1,102 @@
+= Foursquare =
+
+== Methods ==
+
+=== profile ===
+
+See [wiki:Lightning/Profile Profile]
+
+=== most_recent_activity ===
+
+The most recent activity is the "tip of the feed". See [wiki:Lightning/Feed Feed] for details.
+
+=== num_friends ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_friends_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_checkins ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_checkins_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_mayorships ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_mayorships_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_photos ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_photos_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_badges ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_badges_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_lists ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_lists_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}

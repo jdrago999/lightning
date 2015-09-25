@@ -1,0 +1,29 @@
+= Etsy =
+
+== Methods ==
+
+=== profile ===
+
+See [wiki:Lightning/Profile Profile]
+
+
+=== num_favorites===
+
+The number of items you have favorited
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_favorites_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}

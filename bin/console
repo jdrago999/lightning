@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+"""Usage: console ENVIRONMENT [--lightning=SERVER] [--port=PORT] [--log=LOGLEVEL] [--redis=SERVER] [--debug]
+
+Run the Lightning Console application which is used to test the results of the
+Lightning API.
+
+Arguments:
+ENVIRONMENT         environment name to run lightning console in [local, beta, preprod, or prod]
+
+Options:
+--lightning=SERVER  lightning server to make requests against [default: localhost:5000]
+--port=PORT         port to run Lightning Console on [default: 8000]
+--log=LOGLEVEL      logging level for worker [default: error]
+--redis=SERVER      redis server to store sessions in [default: localhost:6379]
+--debug             debug mode
+"""
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from console import Console
+from docopt import docopt
+from lightning.utils import get_config_filename, VERSION
+import logging
+
+if __name__ == '__main__':
+    arguments = docopt(__doc__, version=VERSION)
+    import tornado.httpserver
+    import tornado.ioloop
+    import yaml
+    try:
+        config_filename = get_config_filename(arguments['ENVIRONMENT'])
+        config = yaml.load(open(config_filename))
+        config['environment'] = arguments['ENVIRONMENT']
+        config['lightning'] = arguments['--lightning']
+    except Exception as exc:
+        logging.error('Unable to load config: %s' % exc.message)
+
+    app = Console(config, debug=arguments['--debug'])
+    tornado.httpserver.HTTPServer(app).listen(int(arguments['--port']))
+    tornado.ioloop.IOLoop.instance().start()

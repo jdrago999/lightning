@@ -1,0 +1,110 @@
+= Lightning Education Method Call =
+
+education methods return a dictionary with an array of Education objects keyed by 'data' with the same fields for all services.
+
+There are some specific limitations for the data we can return from each service.
+1. Facebook only gives us {{{end_date_year}}}. So the following fields will be {{{null}}} for a Facebook Education object: {{{start_date_month}}}, {{{start_date_year}}}, and {{{end_date_month}}}.
+2. Facebook may return High School education entries as well, these will be noted by having their {{{degree_earned}}} set to {{{High School}}}
+3. Facebook does not return education_id, LinkedIn does (this maps to an education object and is preserved when the user updates that education entry).
+4. Facebook lets you list multiple concentrations for a {{{field_of_study}}}. In Lightning, we join these into a single string separated by commas like so:
+{{{
+#!js
+"field_of_study": "Computer Engineering, Hustlin, Bachelor of Science in Animal Husbandry"
+}}}
+
+
+Example of a Facebook Education object:
+{{{
+#!js
+{
+    "degree_earned": "MSc",
+    "education_id": null,
+    "end_date_month": null,
+    "end_date_year": 2013,
+    "field_of_study": "Computer Engineering, Hustlin, Bachelor of Science in Animal Husbandry",
+    "school_name": "School of Hard Knocks",
+    "start_date_month": null,
+    "start_date_year": null,
+}
+}}}
+
+Example of a LinkedIn Education object:
+{{{
+#!js
+{
+  "degree_earned": null,
+  "education_id": 41954102,
+  "end_date_month": null,
+  "end_date_year": 2011,
+  "field_of_study": "Computer Science",
+  "school_name": "Florida Atlantic University",
+  "start_date_month": null,
+  "start_date_year": 2006
+}
+}}}
+
+Example response for a Facebook education method call (response is a dictionary with an array of Education objects keyed by 'data' even in one result case):
+{{{
+#!js
+{
+    "data": [
+        {
+            "degree_earned": "High School",
+            "education_id": null,
+            "end_date_month": null,
+            "end_date_year": 2005,
+            "field_of_study": "",
+            "school_name": "St. Thomas Aquinas",
+            "start_date_month": null,
+            "start_date_year": null
+        },
+        {
+            "degree_earned": null,
+            "education_id": null,
+            "end_date_month": null,
+            "end_date_year": 2010,
+            "field_of_study": "Computer Science",
+            "school_name": "Florida Atlantic University",
+            "start_date_month": null,
+            "start_date_year": null
+        }
+    ]
+}
+}}}
+
+Example response for a LinkedIn education method call (response is a dictionary with an array of Education objects keyed by 'data' even in one result case):
+{{{
+#!js
+{
+    "data": [
+        {
+            "degree_earned": "Bachelor of Science (B.Sc.)",
+            "education_id": 41954705,
+            "end_date_month": null,
+            "end_date_year": 2010,
+            "field_of_study": "Computer Engineering",
+            "school_name": "The University of Connecticut",
+            "start_date_month": null,
+            "start_date_year": 2005
+        },
+        {
+            "degree_earned": null,
+            "education_id": 41954102,
+            "end_date_month": null,
+            "end_date_year": 2011,
+            "field_of_study": "Computer Science",
+            "school_name": "Florida Atlantic University",
+            "start_date_month": null,
+            "start_date_year": 2006
+        }
+    ]
+}
+}}}
+
+Example response for a LinkedIn education method call where the user has no positions listed:
+{{{
+#!js
+{
+  "data": []
+}
+}}}

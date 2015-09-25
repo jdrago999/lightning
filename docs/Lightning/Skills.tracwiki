@@ -1,0 +1,34 @@
+= Lightning Skills Method Call =
+
+skills methods return as a dictionary with an array of strings keyed by 'data'.
+
+Example of a LinkedIn Skills result:
+{{{
+#!js
+{
+  "data": [
+    "C",
+    "C++",
+    "C#",
+    "Java",
+    "JavaScript",
+    "PHP",
+    "SQL",
+    "Python",
+    "Perl",
+    "Objective-C",
+    "Unix Shell Scripting",
+    "HTML",
+    "CSS",
+    "Git"
+  ]
+}
+}}}
+
+Example of a skills method call where the user has no skills listed:
+{{{
+#!js
+{
+  "data": []
+}
+}}}

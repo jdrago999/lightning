@@ -1,0 +1,51 @@
+(Please refer to the [wiki:Lightning/API API] document for one possible implementation of these requirements.)
+
+== Requirements ==
+
+1. The broker shall provide a list of all supported APIs.
+  a. Each supported API shall have a unique name provided by the broker that will be used for all communication to and from that API.
+1. The broker shall provide a list of all actions available on any supported API.
+1. The broker shall provide a way of invoking an arbitrary action available via any supported API.
+  a. The broker shall provide a way to invoke multiple actions across multiple APIs at the same time, aggregating the responses into a single response.
+1. The broker shall provide an authentication and authorization mechanism.
+  a. This may entail multiple steps, depending on the API being brokered.
+  a. This shall provide a pass-through for any presentation layer information, if necessary.
+  a. This shall receive and maintain any long-term authentication information provided by the brokered API.
+  a. This shall negotiate any authorization requirements so that the caller's application has the appropriate permissions against a given user's account in the brokered API.
+  a. Upon authorization, if the API user had already authorized that client, the broker shall return the appropriate identifier(s) back to the client such that the client may identify the returning user.
+1. The broker shall provide a way of determining if a given user exists within a given API.
+  a. This is primarily useful for displaying publicly-available information prior to being authorized.
+1. The broker shall provide a way of determining if authorization to a calling application is valid for a given user.
+  a. Many API interactions require a current authorization token. If the token is invalid, then the caller application must re-authorize with the user.
+1. The broker shall provide a way of revoking authorization by a given user for the caller's application in the requested API.
+  a. This shall also perform any necessary data cleanup in order to be compliant with any API's terms of service.
+1. The broker shall be able to determine if a given user within an API has already been authorized for a given client.
+  a. Certain clients may place an additional requirement that a given user within an API may only have one user within the client.
+  a. This knowledge must be maintained regardless of whether authorization has been revoked or not.
+    a. The association between client user_id and API user_id must be able to survive authorization revocation.
+    b. This association must, itself, be revocable upon command.
+1. The broker shall be able to determine what authorizations (if any) a given user within the client has against all supported APIs.
+  a. Certain clients may require this for back-office and/or customer-service functionality.
+1. The broker must be capable of allowing multiple users in a given API to be authorized for a given user within the client.
+  a. Certain clients may not wish to allow this.
+1. The broker shall provide the ability to define a "view".
+  a. An view is a group of API calls (against one or more APIs) that is pre-defined and has a unique name.
+    1. For example, requesting "connections" (Facebook "friends", Twitter "followers", LinkedIn "connections", etc).
+    1. For example, requesting five different pieces of information from Facebook.
+  a. The broker shall provide a way to get the list of all available views.
+  a. The broker shall provide a way to list what API calls comprises a given view.
+1. The broker shall provide a way of specifying a report, such as a "daily digest".
+  a. This report shall, as part of its definition, define minimum retention requirements for specific types of requests.
+  a. This report shall, as part of its definition, define regular offline requests for information.
+    1. This will be for v2.
+  a. The broker shall support storing this information for the purposes of providing these reports.
+    1. Such information shall be subject to any maximum retention requirements as specified in a given API's terms of service.
+    1. Such information shall be subject to any deletion requirements upon revocation of authorization as specified in a given API's terms of service.
+1. The broker shall add no more than 0.25 seconds to time of any API request for its own processing.
+  a. This shall include all web request activities, any data storage activities, and all monitoring.
+  a. The broker shall provide insight into how long the API request takes vs. how long the broker takes to process the request.
+
+Non-Lightning Requirements:
+(New Requirements from 7/16 meeting)
+1. the client website shall have the capability to pre-populate a "default" set of services
+  a. This "default" set should include the ones that the user have already authenticated. For example, if user registered for the client website through FB connect, FB should be in the "default" set of services

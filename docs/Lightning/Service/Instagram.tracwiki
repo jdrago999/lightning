@@ -1,0 +1,126 @@
+= Instagram =
+
+== Methods ==
+
+=== profile ===
+
+See [wiki:Profile]
+
+=== person_commented ===
+When no one has commented for the time interval, returns null:
+{{{
+{
+  "success": null
+}
+}}}
+
+When someone has commented you, returns the person's profile:
+
+{{{
+{
+  "bio": "John at Lightning. Go for it!",
+  "email": null,
+  "gender": null,
+  "headline": null,
+  "name": "John Smith",
+  "num": 3,
+  "profile_link": "https://instagram.com/test123",
+  "profile_picture_link": "http://images.instagram.com/profiles/anonymousUser.jpg",
+  "username": "test123"
+}
+}}}
+
+=== num_photos ===
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_photos_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== num_followers ===
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_followers_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== num_followed ===
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_followed_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== num_likes ===
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_likes_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== num_comments ===
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_comments_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== most_recent_activity ===
+
+The most recent activity is the "tip of the feed". See [wiki:Lightning/Feed Feed] for details.

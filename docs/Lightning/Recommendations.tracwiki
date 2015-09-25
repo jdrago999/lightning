@@ -1,0 +1,28 @@
+= Lightning Recommendations Method Call =
+
+recommendations methods return as a dictionary with an array of Recommendation objects keyed by 'data'.
+
+Example of a LinkedIn Recommendations result:
+{{{
+#!js
+{
+  "data": [
+    {
+      "recommendation": "The Lightning Team is amazing to work with.",
+      "recommender": "Ted Anderson"
+    },
+    {
+      "recommendation": "Working with The Lightning Team has been a wonderful experience.",
+      "recommender": "Bob Robertson"
+    }
+  ]
+}
+}}}
+
+Example of a recommendations method call where the user has no recommendations listed:
+{{{
+#!js
+{
+  "data": []
+}
+}}}

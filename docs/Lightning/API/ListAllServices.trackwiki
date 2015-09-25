@@ -1,0 +1,34 @@
+== List all Services ==
+
+=== Purpose ===
+
+To list all the Services that are supported by Lightning.
+
+=== Endpoint ===
+
+{{{GET /api}}}
+
+=== Inputs ===
+
+None. All arguments will be ignored.
+
+=== Outputs ===
+
+* 200: Ok - If the call is successful and a body with the following structure:
+
+{{{
+{
+    'services': [
+        'service1',
+        'service2'
+    ]
+}
+}}}
+
+=== Errors ===
+
+None.
+
+=== Side Effects ===
+
+None.

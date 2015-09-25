@@ -1,0 +1,89 @@
+= Lightning Errors =
+
+Errors returned by Lightning generally take the following form, while also return an appropriate HTTP Status Code:
+
+{{{
+#!js
+{
+  "error": {
+    "message": "Unauthorized",
+    "code": "401"
+  }
+}
+}}}
+
+
+== Responses ==
+|| Lightning Response || Client Code || '''UI Response in Summary Tile''' || UI Response Detail Tile || Client Actions || Notes ||
+|| 400 Bad Parameters || bad_parameters ||"Oops something went wrong. Stay tuned! We're working on getting your info. "|| Not clickable || When user refresh, will send a new request|| N/A ||
+|| 200 with an "timestamp" that shows expiration time || expired || "Oops your token for linking an app expired. Please try to connect your app again." || Not clickable || Client mark the user authorization as unauthorized (Show FB as disconnected)||  N/A ||
+|| 401 Unauthorized/Invalid access_token || unauthorized || "Oops your token for linking an app expired. Please try to connect your app again." || Not clickable || Client mark the user authorization as unauthorized (Show FB as disconnected)||  N/A ||
+|| 406 Invalid redirect_uri || invalid_redirect_uri ||"Oops something went wrong! Stay tuned...we'll get things back pronto""|| Not clickable ||When user refresh, will send a new request|| need to update in the service app ||
+|| 503 Rate limited ||rate_limited ||"Oops something went wrong! Stay tuned...we'll get things back pronto""|| Not clickable ||Nothing. Things are recorded in Splunk|| N/A ||
+
+ In throttling cases we return a retry_at if available which will give a valid timestamp when the request can be tried again.
+{{{
+#!js
+{
+  "error": {
+    "message": "Rate limited",
+    "retry_at": "12345",
+    "code": 503
+  }
+}
+}}}
+
+When requesting the stream, errors will be returned for the appropriate service in an 'errors' keyed array at the top-level which contains Error objects. All other service data successfully obtained will still be returned.
+
+{{{
+#!js
+{
+    "errors": [
+        {
+                "message": "Rate limited",
+                "retry_at": "1368218654",
+                "code": 503,
+                "service": "twitter"
+        }
+    ],
+    "data": [
+        {
+            "activity": {
+                "description": "LosOps Inflection ran 6.63 km for 30 minutes"
+            },
+            "author": {
+                "bio": null,
+                "email": null,
+                "gender": "M",
+                "headline": null,
+                "name": "LosOps Inflection",
+                "profile_link": "http://runkeeper.com/user/780448966",
+                "profile_picture_link": "http://s3.amazonaws.com/profilepic.runkeeper.com/JXLWhSSTmXPRYPAoySffP5VP_norm.jpg",
+                "user_id": "16772221"
+            },
+            "metadata": {
+                "is_echo": 0,
+                "is_private": 0,
+                "post_id": "156325186",
+                "service": "runkeeper",
+                "timestamp": 1363028119
+            }
+        }
+    ]
+}
+}}}
+
+
+|| 403 Insufficient permissions granted ||insufficient_permissions ||"Please connect the app again and be sure to authorize the permissions we need to retrieve your data. Thanks!" || Not clickable || Client delete the existing authorization in it's database and Lightning, and Client would show the service as disconnected|| N/A ||
+|| 502 Unknown response from service (msg will be passed along) || unknown_response || "Oops something went wrong! Stay tuned, we'll fix it quick. ""|| Not clickable || When user refresh, will send a new request|| N/A ||
+|| 500 Unhandled Lightning Error ||general || Oops something went wrong! Stay tuned, we'll fix it quick. || Not clickable ||When user refresh, will send a new request || N/A ||
+|| 200 Empty data || empty_data ||"Stay tuned! We're working on getting your info."|| Not clickable ||When user refresh, will send a new request|| N/A ||
+|| 206 Partial data || -- || -- || -- || -- || -- ||
+|| All zeros || Nothing || Show as what it is || Show as what it is ||Nothing||N/A||
+
+500 is reserved for unhandled errors within Lightning itself.
+
+== View Error Response Codes ==
+* Calls to view will return a 206 as the status code if there are errors and we are still able to return some partial data.
+* If we encounter an error and no additional data can be returned, we will return the error code of the first error encountered, ex: 401.
+* Completely successful requests will return a 200.

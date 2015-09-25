@@ -1,0 +1,124 @@
+= Lightning Work Method Call =
+
+work methods return a dictionary with an array of Work objects keyed by 'data' with the same fields for all services and will always return an array if the user has work positions.
+
+There are some specific limitations for the data we can return from each service.
+1. Facebook does not tell us whether a position is current or not, so {{{is_current}}} will always be {{{null}}} for Facebook Work objects.
+2. We currently only support retuning US locations from Facebook for a Work object (international support will be added at a later date).
+3. LinkedIn does not give us any location data at all, so {{{city}}} and {{{state}}} will always be {{{null}}} for LinkedIn Work objects.
+4. Facebook does not give us a work_id, so Facebook will always have a null work_id.
+
+Example of a LinkedIn Work object:
+{{{
+#!js
+{
+    "city": null,
+    "end_date_month": null,
+    "end_date_year": null,
+    "is_current": true,
+    "organization_name": "Inflection",
+    "start_date_month": 9,
+    "start_date_year": 2011,
+    "state": null,
+    "title": "Software Engineer"
+    "work_id": 303007820
+}
+}}}
+
+Example response for a Facebook work method call (data is an array of Work objects, even in one result case):
+{{{
+#!js
+{
+    "data": [
+        {
+            "city": "Redwood City",
+            "end_date_month": null,
+            "end_date_year": null,
+            "is_current": null,
+            "organization_name": "Inflection",
+            "start_date_month": 9,
+            "start_date_year": 2011,
+            "state": "CA",
+            "title": "Software Engineer",
+            "work_id": null
+        },
+        {
+            "city": "Boca Raton",
+            "end_date_month": 8,
+            "end_date_year": 2010,
+            "is_current": null,
+            "organization_name": "Electrone Americas",
+            "start_date_month": 5,
+            "start_date_year": 2010,
+            "state": "FL",
+            "title": "Software Developer",
+            "work_id": null
+        }
+    ]
+}
+}}}
+
+Example response for a LinkedIn work method call (data is an array of Work objects, even in one result case):
+{{{
+#!js
+{
+    "data": [
+        {
+            "city": null,
+            "end_date_month": null,
+            "end_date_year": null,
+            "is_current": true,
+            "organization_name": "Inflection",
+            "start_date_month": 9,
+            "start_date_year": 2011,
+            "state": null,
+            "title": "Software Engineer",
+            "work_id": 303007482
+        },
+        {
+            "city": null,
+            "end_date_month": 8,
+            "end_date_year": 2011,
+            "is_current": false,
+            "organization_name": "Freelance Web Development",
+            "start_date_month": 7,
+            "start_date_year": 2006,
+            "state": null,
+            "title": "Web Developer",
+            "work_id": 303007454
+        },
+        {
+            "city": null,
+            "end_date_month": 4,
+            "end_date_year": 2011,
+            "is_current": false,
+            "organization_name": "Electrone Americas",
+            "start_date_month": 5,
+            "start_date_year": 2010,
+            "state": null,
+            "title": "Software Engineer",
+            "work_id": 303007810
+        },
+        {
+            "city": null,
+            "end_date_month": 5,
+            "end_date_year": 2010,
+            "is_current": false,
+            "organization_name": "LACCEI",
+            "start_date_month": 1,
+            "start_date_year": 2010,
+            "state": null,
+            "title": "Volunteer Software Engineer",
+            "work_id": 303007820
+        }
+    ]
+}
+}}}
+
+Example response for a work method call where the user has no positions listed:
+{{{
+#!js
+{
+  "data": []
+}
+}}}

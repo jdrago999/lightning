@@ -1,0 +1,90 @@
+== Create view ==
+
+=== Purpose ===
+
+To create a view that may be invoked at a later time. More than one function can be included in a view, potentially against multiple APIs.
+
+If multiple function invocations are specified, they may be invoked in any order, possibly in parallel.
+
+=== Endpoint ===
+
+{{{POST /view}}}
+
+=== Inputs ===
+
+The POST body is a JSON object that has the following keys:
+* name: String
+* definition: a JSON string that is an array of hashes. The hashes must contain exactly two keys each:
+  * "service": the name of a service supported by Lightning
+  * "method": the name of a method supported by that service
+Example:
+{{{
+{
+    "name": "view name",
+    "definition": [
+          {
+            "service": "facebook",
+            "method": "num_photos"
+          },
+          {
+            "service": "facebook",
+            "method": "profile"
+          }
+        ]
+}
+}}}
+
+=== Outputs ===
+
+* 201: Resource Created - Will be returned on success, with a location header of:
+
+Location: /view/<name>
+
+and a response body of:
+{{{
+{
+    'success': "View '<name>' created"
+}
+}}}
+
+=== Errors ===
+
+* 400: Bad Request - If any required input is missing, with a response body of:
+{{{
+{
+    'error': "Missing parameters 'param1', 'param2'"
+}
+}}}
+* 409: Conflict - If the view already exists, with a response body of:
+{{{
+{
+    'error': "View '<name>' already exists"
+}
+}}}
+* 400: Bad Request - If any other error occurs, with a response body of:
+{{{
+{
+    'error': [
+        "error 1",
+        "error 2"
+    ]
+}
+}}}
+The errors may be one of the following:
+  * If the <value> parameter is not a list, then "'value' is not a list"
+  * If the value at position <idx> is not a hash/object/dict, then
+    * "<idx>: Received non-object"
+  * If the value at position <idx> does not have a 'service' key, then
+    * "<idx>: Missing 'service'"
+  * If the value at position <idx> does not have a 'method' key, then
+    * "<idx>: Missing 'method'"
+  * If the value at position <idx> has additional keys other than 'service' and 'method', then
+    * "<idx>: Received unexpected keys"
+  * If the value at position <idx>'s 'service' key is unrecognized, then
+    * "<idx>: Service '<service>' unknown"
+  * If the value at position <idx>'s 'method' key is unrecognized for <service>, then
+    * "<idx>: Method '<method>' on service '<service>' unknown"
+
+=== Side Effects ===
+
+None.

@@ -1,0 +1,309 @@
+= Lightning `StreamEvent` Objects =
+
+All `StreamEvent` objects will always return as the following dictionary with all keys present (the values present for each key will differ according to service).
+Any values that aren't present will '''default to `null`.'''
+
+== Basic Structure ==
+{{{
+#!js
+{
+    "activity": {
+        "activity_link": "https://www.facebook.com/photo.php?fbid=10100388081353985&set=pcb.10100388081862965&type=1&relevant_count=3",
+        "additional_users": null,
+        "caption": null,
+        "description": null,
+        "location": {
+            "latitude": 51.499658606088,
+            "longitude": -0.16214713172754,
+            "name": "Harrods"
+        },
+        "name": null,
+        "picture_link": "https://fbcdn-photos-g-a.akamaihd.net/hphotos-ak-prn2/5755_10100388081353985_1029129347_n.jpg",
+        "story": "Harry Potter posters",
+        "thumbnail_link": "https://fbcdn-photos-g-a.akamaihd.net/hphotos-ak-prn2/5755_10100388081353985_1029129347_s.jpg",
+        "type": "photo",
+        "video_id": null,
+        "video_link": null
+    },
+    "author": {
+        "name": "Ray Baksh",
+        "profile_link": "https://www.facebook.com/33407195",
+        "profile_picture_link": "https://graph.facebook.com/33407195/picture",
+        "user_id": "33407195",
+        "username": null
+    },
+    "metadata": {
+        "is_echo": 0,
+        "is_private": 1,
+        "post_id": "33407195_10100388081862965",
+        "service": "facebook",
+        "timestamp": 1371764678
+    }
+}
+}}}
+=== Activity ===
+Activity represents the posted activity of the `StreamEvent`.
+* `activity_link` is a `string` that contains either a link to the activity on the service or an external link to the source article.
+* `additional_users` is an `array` that contains `StreamUser` objects. It is typically only returned for new friend events (such as on Facebook and LinkedIn).
+* `caption` is a `string` representing a small blurb a
+* `description` is a `string` that contains the long description of an article.
+* `location` is an `object` that contains the `latitude`, `longitude`, and `name` of the place that the `StreamEvent` occurred.
+* `name` is a `string` that contains the name of an article.
+* `picture_link` is a `string` that contains a link to a full resolution image from the service.
+* `story` is a `string` that contains the story item to be displayed.
+* `thumbnail_link` is a `string` that contains a link to a low resolution image from the service if available.
+* `type` is a `string` that contains the type of `StreamEvent`, which may be: `article`, `photo`, `status`, `video`, or `video_embed`
+* `video_id` is a `string` that contains the id of a video to be embedded via the service's JavaScript embed script.
+* `video_link` is a `string` that contains the link to a video resource.
+=== Author ===
+Author represents the user that created this `StreamEvent`. `StreamEvents` with an author that is not the authenticated user are denoted by an `is_echo` value of `1`.
+Author varies in the amount of filled out data returned for each service. Generally, `user_id` will always be present.
+* `name` is a `string` that specifies the name of the user that authored this `StreamEvent`
+* `profile_link` is a `string` that contains the link to the user's profile on the service.
+* `profile_picture_link` is a `string` that contains the link to the user's profile picture on the service.
+* `user_id` is a `string` that contains the user's unique ID on the service. ('''Note''': This is only unique by service).
+* `username` is a `string` that contains the user's username on the service. ('''Note''': This should be used as a fallback if `name` is not present. May need an additional fallback if neither `name` nor `username` are present).
+=== Metadata ===
+Metadata ''should'' always have values for its fields present.
+* `is_echo` is a `boolean` that specifies whether this `StreamEvent` is by the authenticated user (`0`) or by another user (`1`)
+* `is_private` is a `boolean` that specifies whether this `StreamEvent` is public (`0`) or private (`1`)
+* `post_id` is a `string` that contains the id of this `StreamEvent` from the service. ('''Note''': This is only unique by service).
+* `service` is a `string` that contains the name of the service this `StreamEvent` is from.
+* `timestamp` is an `integer` representing the UNIX timestamp this `StreamEvent` was posted on.
+== StreamEvent Types ==
+To better support display of `StreamEvents`, Lightning will now categorize certain types of posts according to the data returned and how one would likely want to display that `StreamEvent`.
+=== article ===
+`article` type indicates that the main activity of the `StreamEvent` is a linked article or blog post. An article has a `name` and `description`. An article may also contain a `thumbnail_link` to display an image.
+
+Examples are a shared link on Facebook, a blog post on Blogger or Wordpress, and a submission on Reddit.
+
+{{{
+#!js
+{
+    "activity": {
+        "activity_link": "http://liveforlivemusic.com/news/remember-the-baby-from-nirvanas-nevermind-cover-he-is-20-feel-old-yet/",
+        "additional_users": null,
+        "caption": "liveforlivemusic.com",
+        "description": "The baby from Nirvana's \"Nevermind\"",
+        "location": null,
+        "name": "Remember the baby from Nirvana’s “Nevermind” cover? He is 22. Feel old yet?",
+        "picture_link": null,
+        "story": null,
+        "thumbnail_link": "https://fbexternal-a.akamaihd.net/safe_image.php?d=AQA76EPUVParF8J5&w=154&h=154&url=http%3A%2F%2Fliveforlivemusic.com%2Fwp-content%2Fuploads%2F2013%2F10%2Fnirvana-nevermind.jpg",
+        "type": "article",
+        "video_id": null,
+        "video_link": null
+    },
+    "author": {
+        "name": "Nelly Alvarez",
+        "profile_link": "https://www.facebook.com/100001629362676",
+        "profile_picture_link": "https://graph.facebook.com/100001629362676/picture",
+        "user_id": "100001629362676",
+        "username": null
+    },
+    "metadata": {
+        "is_echo": 1,
+        "is_private": 0,
+        "post_id": "33407195_605914489472858",
+        "service": "facebook",
+        "timestamp": 1382572460
+    }
+}
+}}}
+=== photo ===
+`photo` type indicates that the main activity of the `StreamEvent` is a photo. Generally, a full resolution `picture_link` will be available in addition to a `thumbnail_link`.
+
+Examples are photos in Facebook, Flickr, Google+, and Instagram.
+{{{
+#!js
+{
+    "activity": {
+        "activity_link": "http://instagram.com/p/NKIPT9p2Xr/",
+        "additional_users": null,
+        "caption": null,
+        "description": null,
+        "location": {
+            "latitude": 37.446790895,
+            "longitude": -122.169746133,
+            "name": "El Palo Alto Redwood Tree"
+        },
+        "name": null,
+        "picture_link": "http://distilleryimage11.s3.amazonaws.com/51c7d0cecf9411e18a5b22000a1cbb38_7.jpg",
+        "story": "El Palo Alto",
+        "thumbnail_link": "http://distilleryimage11.s3.amazonaws.com/51c7d0cecf9411e18a5b22000a1cbb38_5.jpg",
+        "type": "photo",
+        "video_id": null,
+        "video_link": null
+    },
+    "author": {
+        "name": "vtmn",
+        "profile_link": "https://instagram.com/vtmn",
+        "profile_picture_link": "http://images.ak.instagram.com/profiles/profile_2867520_75sq_1359672234.jpg",
+        "user_id": "2867520",
+        "username": "vtmn"
+    },
+    "metadata": {
+        "is_echo": 0,
+        "is_private": 0,
+        "post_id": "237038166990087659_2867520",
+        "service": "instagram",
+        "timestamp": 1342477173
+    }
+}
+}}}
+=== status ===
+`status` type indicates that the main activity of the `StreamEvent` is text, typically the `story`.
+
+Examples include status updates in Facebook, Google+, GitHub, LinkedIn, RunKeeper, and Twitter. Facebook and LinkedIn new friend status updates will include the friended user under `additional_users`.
+{{{
+#!js
+{
+    "activity": {
+        "activity_link": null,
+        "additional_users": [
+            {
+                "name": "Clarke Christiansen",
+                "profile_link": "https://www.facebook.com/1662784330",
+                "profile_picture_link": "https://graph.facebook.com/1662784330/picture",
+                "user_id": "1662784330",
+                "username": null
+            }
+        ],
+        "caption": null,
+        "description": null,
+        "location": null,
+        "name": null,
+        "picture_link": null,
+        "story": "Ray Baksh and Clarke Christiansen are now friends.",
+        "thumbnail_link": null,
+        "type": "status",
+        "video_id": null,
+        "video_link": null
+    },
+    "author": {
+        "name": "Ray Baksh",
+        "profile_link": "https://www.facebook.com/33407195",
+        "profile_picture_link": "https://graph.facebook.com/33407195/picture",
+        "user_id": "33407195",
+        "username": null
+    },
+    "metadata": {
+        "is_echo": 0,
+        "is_private": 0,
+        "post_id": "33407195_10100503044047825",
+        "service": "facebook",
+        "timestamp": 1382722567
+    }
+}
+}}}
+=== video ===
+`video` type indicates that the main activity of the `StreamEvent` is a video, returned in `video_link`. This is currently only used by Facebook.
+{{{
+#!js
+{
+    "activity": {
+        "activity_link": "https://www.facebook.com/photo.php?v=10100501592252235",
+        "additional_users": null,
+        "caption": null,
+        "description": null,
+        "location": null,
+        "name": null,
+        "picture_link": "https://fbcdn-vthumb-a.akamaihd.net/hvthumb-ak-ash3/1095868_10100501592741255_10100501592252235_46290_1145_n.jpg",
+        "story": "Some guy walking around with bunnies.",
+        "thumbnail_link": "https://fbcdn-vthumb-a.akamaihd.net/hvthumb-ak-ash3/1095868_10100501592741255_10100501592252235_46290_1145_b.jpg",
+        "type": "video",
+        "video_id": null,
+        "video_link": "https://fbcdn-video-a.akamaihd.net/hvideo-ak-ash3/v/1243247_10100501592646445_852575768_n.mp4?oh=7b80907b6085e319453a2c8a3ea3bfa8&oe=527300C2&__gda__=1383366158_a8d65ed3fdea88e1f228a758a7c3ee4c"
+    },
+    "author": {
+        "name": "Ray Baksh",
+        "profile_link": "https://www.facebook.com/33407195",
+        "profile_picture_link": "https://graph.facebook.com/33407195/picture",
+        "user_id": "33407195",
+        "username": null
+    },
+    "metadata": {
+        "is_echo": 0,
+        "is_private": 1,
+        "post_id": "33407195_10100501592252235",
+        "service": "facebook",
+        "timestamp": 1382562793
+    }
+}
+}}}
+=== video_embed ===
+`video_embed` type indicates that the main activity of the `StreamEvent` is a video to be embedded using a JavaScript snippet provided by the service. This is currently used by Vimeo and YouTube.
+{{{
+#!js
+{
+    "activity": {
+        "activity_link": "https://www.youtube.com/watch?v=Pw41LlKjTFA",
+        "additional_users": null,
+        "caption": null,
+        "description": null,
+        "location": null,
+        "name": null,
+        "picture_link": null,
+        "story": "ray315 uploaded a video: \"Alcatraz Sign\"",
+        "thumbnail_link": null,
+        "type": "video_embed",
+        "video_id": "Pw41LlKjTFA",
+        "video_link": null
+    },
+    "author": {
+        "name": "ray315",
+        "profile_link": "http://www.youtube.com/user/ray315",
+        "profile_picture_link": "https://s.ytimg.com/yts/img/avatar_720-vflYJnzBZ.png",
+        "user_id": "R10ZFl-Kx40qiNcxRXExXA",
+        "username": "ray315"
+    },
+    "metadata": {
+        "is_echo": 0,
+        "is_private": 0,
+        "post_id": "tag:youtube.com,2008:video:Pw41LlKjTFA",
+        "service": "youtube",
+        "timestamp": 1363287575
+    }
+}
+}}}
+=== transaction ===
+`transaction` type indicates that the main activity of the `StreamEvent` is a sales transaction. A transaction has a `name` and `description`. A transaction may also contain a `thumbnail_link` to display an image.
+
+Currently only used by transactions on Etsy.
+
+{{{
+#!js
+{
+      "activity": {
+        "activity_link": null,
+        "additional_users": null,
+        "caption": null,
+        "description": "Originally created, inspired how weather and mom can be related. \r\nUsed recycled materials to save the earth. \r\nAll about creativity",
+        "location": null,
+        "name": "How Mom Makes It Rain - Original Drawing",
+        "picture_link": "https://img1.etsystatic.com/012/0/6925015/il_fullxfull.444978871_9vpg.jpg",
+        "story": "naughtgivvet bought \"How Mom Makes It Rain - Original Drawing\" from you",
+        "thumbnail_link": "https://img1.etsystatic.com/012/0/6925015/il_170x135.444978871_9vpg.jpg",
+        "type": "transaction",
+        "video_id": null,
+        "video_link": null
+      },
+      "author": {
+        "name": "Naught Givvet",
+        "profile_link": "http://etsy.com/people/naughtgivvet",
+        "profile_picture_link": "https://img1.etsystatic.com/011/0/32182443/iusa_75x75.22650325_dbxw.jpg",
+        "user_id": 32182443,
+        "username": "naughtgivvet"
+      },
+      "metadata": {
+        "is_echo": 1,
+        "is_private": 0,
+        "post_id": "transaction:125288932",
+        "service": "etsy",
+        "timestamp": 1365009059
+      }
+    }
+}}}
+== Issues to be Resolved ==
+* How do we handle YouTube videos posted in a Facebook status?
+* Currently, Lightning parses these as Facebook `article` types, we should probably parse out the ID from the YouTube link and make it a `video_embed` type. Discuss with FED first.

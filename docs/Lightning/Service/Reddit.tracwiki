@@ -1,0 +1,41 @@
+= Reddit =
+
+== Methods ==
+
+=== profile ===
+
+See [wiki:Lightning/Profile Profile]
+
+
+=== num_link_karma_points ===
+
+The number of link karma points you have gained
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_link_karma_points_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+
+== Lightning Developer Notes ==
+
+The following are unique/annoying about Reddit:
+
+* You have to use http authentication to get an authorization token (implemented)
+* They use  a 'state' token parameter on their oauth urls to prevent cross-site request forgery (CSRF).  Facebook uses this too, and I was able to refactor some code from the FB service for this. (implemented)
+* Their listing methods do not return any counts.  Thus, to get a count of all a users links or something similar, the code will have to page through a list 100 items at a time to get a valid count, not knowing how many requests this will take
+* They use a similar hour-long token renewal thing to what Google does.
+* Some of their endpoints force HTTP, others force HTTPS.  Will have to add some code to handle this as this is the only service with this issue
+* There is no special token to use the current user in "user"-centric  endpoints.  Thus, we'll have to either store the username somewhere readily accessible or make two requests for any such endpoint.

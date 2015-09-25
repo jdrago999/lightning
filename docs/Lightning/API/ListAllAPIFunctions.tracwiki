@@ -1,0 +1,40 @@
+== List all Methods for a Service ==
+
+=== Purpose ===
+
+To list all the methods that may be called on a given Service, along with some descriptive text for each method.
+
+=== Endpoint ===
+
+{{{GET /api/<service>}}}
+
+=== Outputs ===
+
+* 200: Ok - If the call is successful and a body with the following structure:
+
+Example:
+{{{
+{
+    'methods': {
+        'GET': {
+            "method1": "Description of what method1 does",
+            "method2": "Description of what method2 does"
+        },
+        'POST': {
+        },
+    }
+],
+}}}
+
+=== Errors ===
+
+* 404: Not Found - If the service name is not recognized with a response body of:
+{{{
+{
+  "error": "Service '<service>' unknown"
+}
+}}}
+
+=== Side Effects ===
+
+None.

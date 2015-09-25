@@ -1,0 +1,34 @@
+== Invalidate views ==
+
+=== Purpose ===
+
+To invalidate the views within Lightning.
+
+This is implemented by deleting all the Lightning Views and creating new Views with the names and definitions from an internal inflection api. (Should be modified for the open soruce version)
+
+=== Endpoint ===
+
+{{{POST /view/invalidate}}}
+
+=== Inputs ===
+
+* None
+
+=== Outputs ===
+
+* 200: OK
+
+=== Errors ===
+
+* 400: Missing URI Parameter - Must be invoked as a POST on /view/invalidate
+{{{
+{
+    'error': 'Missing URI Parameter "invalidate"'
+}
+}}}
+* 502: External Error - There was an error in the response from an external API
+{{{
+{
+    'error': '<message from External API>'
+}
+}}}

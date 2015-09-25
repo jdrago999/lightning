@@ -1,0 +1,32 @@
+= WordPress =
+
+== Notes ==
+WordPress ignores the "time" part of datetimes.  So when we request all the data from 4/16/2013 11:45 AM back, it actually sends us everything from 4/16/2013 12:00 AM back.  Thus, the only things we'll see on the timeline are those from midnight the previous night.
+
+== Methods ==
+
+=== profile ===
+
+See [wiki:Lightning/Profile Profile]
+
+
+=== num_posts ===
+
+The number of blog entries you have posted
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_posts_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}

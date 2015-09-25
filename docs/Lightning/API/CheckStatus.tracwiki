@@ -1,0 +1,100 @@
+== Check status ==
+
+=== Purpose ===
+
+To check the status of multiple authorizations.
+Note: this method must make a live request for each authorization to verify its status.
+
+=== Endpoint ===
+
+{{{POST /status}}}
+
+=== Inputs ===
+
+The POST body is a JSON object with the following key:
+* guids: a JSON array of guids.
+Example:
+{{{
+#!js
+{
+    "guids": ["9a2c850f-60ed-405f-96f7-15d26d098841", "34b4a841-654e-4286-b1f9-5dcd6275a955", "09e55e62-51c5-40a8-bbfe-04853b98e36f"]
+}
+}}}
+
+=== Outputs ===
+
+* 200: OK - Returned on success with a hash keyed by `result` containing `Status` objects. `Status` objects consist of `guid`, `message`, `code`, `service_name`, and `is_refreshable`.
+Codes and messages will be mirror those of Lightning/Errors except for the addition of `200 OK` and `404 GUID not found`
+{{{
+#!js
+{
+    "result": [
+        {
+            "guid": "9a2c850f-60ed-405f-96f7-15d26d098841",
+            "message": "OK",
+            "code": 200,
+            "service_name": "facebook",
+            "is_refreshable": false
+        },
+        {
+            "guid": "09e55e62-51c5-40a8-bbfe-04853b98e36f",
+            "message": "Invalid access_token",
+            "code": 401,
+            "service_name": "facebook",
+            "is_refreshable": false
+        },
+        {
+            "guid": "efdcc917-279a-417a-9d4b-2173aa0c282d",
+            "message": "Invalid access_token",
+            "code": 401,
+            "service_name": "linkedin",
+            "is_refreshable": false
+        },
+        {
+            "guid": "5555a841-654e-4286-b1f9-5dcd6275a955",
+            "message": "GUID not found",
+            "code": 404,
+            "service_name": null
+            "is_refreshable": null
+        }
+        {
+            "guid": "34b4a841-654e-4286-b1f9-5dcd6275a955",
+            "message": "OK",
+            "code": 200,
+            "service_name": "googleplus",
+            "is_refreshable": true
+        },
+        {
+            "guid": "10f6e62-51c5-40a8-bbfe-04853b98a42a",
+            "message": "OK",
+            "code": 200,
+            "service_name": "twitter",
+            "is_refreshable": false
+        }
+    ]
+}
+}}}
+
+=== Errors ===
+
+* 400: Bad Request - If any required input is missing or duplicate GUIDs are passed in with a response body of:
+{{{
+#!js
+{
+    "error": {
+        "message": "POST body does not include 'guids'"
+    }
+}
+}}}
+{{{
+#!js
+{
+    "error": {
+        "message": "Duplicate GUIDs 'efdcc917-279a-417a-9d4b-2173aa0c282d' provided"
+    }
+}
+}}}
+
+=== Side Effects ===
+
+This makes a live request out to each service per guid passed in.

@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+"""Usage: lightning ENVIRONMENT [--port=PORT] [--log=LOGLEVEL] [--profile] [--record]
+       lightning ENVIRONMENT [--port=PORT] [--log=LOGLEVEL] [--profile]
+                             [--play] [--filter] [--simulate-errors]
+       lightning ENVIRONMENT [--port=PORT] [--log=LOGLEVEL] [--profile]
+                             [--loadtest] [--simulate-errors]
+
+Run the Lightning application.
+
+Arguments:
+ENVIRONMENT         environment name to run lightning in [dev, local, beta, preprod, or prod]
+
+Options:
+--port=PORT         port to run Lightning on [default: 8000]
+--log=LOGLEVEL      logging level for worker [default: error]
+--record            record responses to file
+--play              playback responses from file
+--filter            filter responses (for load testing)
+--loadtest          enable loadtesting mode (forces --play and --filter to true)
+--simulate-errors   simulate delays and errors in responses (for load testing)
+"""
+
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from docopt import docopt
+from twisted.internet import reactor
+from lightning import Lightning
+from lightning.utils import get_config_filename, VERSION
+import logging
+
+if __name__ == '__main__':
+    arguments = docopt(__doc__, version=VERSION)
+
+    try:
+        import yaml
+        config_filename = get_config_filename(arguments['ENVIRONMENT'])
+        config = yaml.load(open(config_filename))
+    except Exception as e:
+        print 'Error loading config: %s' % e.message
+        config = {}
+
+    logging.basicConfig(
+        level=arguments['--log'].upper(),
+        format='[%(asctime)s] (%(levelname)s) %(module)s.%(funcName)s:%(lineno)d %(message)s',
+        datefmt='%Y-%m-%d %I:%M:%S %p'
+    )
+
+    config['record'] = arguments['--record']
+    config['play'] = arguments['--play'] or arguments['--loadtest']
+    config['use_filters'] = arguments['--filter'] or arguments['--loadtest']
+    config['simulate_delays_and_errors'] = arguments['--simulate-errors']
+
+
+    d = Lightning.build(config)
+
+    def on_build(app):
+        reactor.listenTCP(int(arguments['--port']), app.site)
+    d.addCallback(on_build)
+
+
+    if not arguments['--profile']:
+        reactor.run()
+    else:
+        import profile
+        import pstats
+        p = profile.Profile()
+        p.runcall(reactor.run)
+        tmp, sys.stdout = sys.stdout, open('/tmp/profile', 'a')
+        try:
+            ps = pstats.Stats(p)
+            ps.sort_stats('time').print_stats()
+        finally:
+            sys.stdout, tmp = tmp, sys.stdout
+            tmp.close()
+

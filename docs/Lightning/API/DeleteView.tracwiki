@@ -1,0 +1,92 @@
+== Invoke view ==
+
+=== Purpose ===
+
+To invoke the functions defined within a view and return the result.
+
+If multiple views are provided, then the views may be invoked in any order and possibly in parallel. The results will be returned in the order than the views were requested.
+.
+If a view has multiple function invocations, then the functions may be invoked in any order and possibly in parallel.
+
+=== Endpoint ===
+
+{{{GET /view/<name>/invoke}}}
+
+=== Inputs ===
+
+* guid - this is one or more guids provided for by the client.
+
+In addition, any parameters required by any method in the view may also be passed.
+
+=== Outputs ===
+
+* 200: OK - An Array of Errors if present and an Array of Results. The return values will be ordered as defined in each respective view.
+
+The return value from a function invocation will not be present in results if there was an error from the API invoked. It will return as an error object within the top-level errors array.
+
+{{{
+HTTP Status Code: 206
+{
+  'errors': [
+   {
+     'service': 'loopback', 'method': 'broken': 'message': 'This method is intentionally broken', 'code': 500
+   }
+  ]
+  'result': [
+    {'service': 'loopback', 'method': 'time', 'data': '30'},
+    {'service': 'loopback', 'method': 'random', 'num': '40'},
+  ],
+}
+}}}
+
+or
+
+{{{
+{
+  'result': [
+      {
+        'service': 'loopback',
+        'method': 'random_interval',
+        'data': [
+          { 'num': '30', 'timestamp': '100' },
+        ]
+      },
+  ],
+}
+}}}
+
+If a service/method pair within a view definition does not have a corresponding authorization for it in this invocation, then the response for that specific method will be:
+{{{
+{
+    'service': <service>,
+    'method': <method>,
+    'error': 'User not authorized',
+}
+}}}
+
+This means that if any GUIDs are provided to this endpoint and no other errors occur, the response **will** be a 200-OK. Any errors will be at the method level, not the view level.
+
+=== Errors ===
+
+* 404: Not Found - If the view name is unrecognized, with a response body of:
+{{{
+{
+    'error': 'View '<name>' unknown'
+}
+}}}
+* 401: Not Authorized - If no guids are provided, with a response body of:
+{{{
+{
+    'error': 'GUIDs not provided'
+}
+}}}
+* 401: Not Authorized - If any of the guids are not recognized, with a response body of:
+{{{
+{
+    'error': 'GUID <guid> not recognized'
+}
+}}}
+
+=== Side Effects ===
+
+This may save the results of the function invocation(s) to a data store for later retrieval.

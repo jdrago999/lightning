@@ -1,0 +1,162 @@
+Please refer to the [wiki:Lightning/Requirements requirements] document when reading this design document.
+
+== Overview ==
+
+There are two primary activities in Lightning. These are activities that relate to:
+* API
+* View
+
+API activities are those that go directly against an API. This would include invoking a function as well as authn/authz functionality.
+
+Views are aggregations of API invocations, identified by a unique name. They can be created and deleted on the fly. When a view is invoked, it will invoke all the functions within it and return that result.
+
+== Transport ==
+
+All transport will be over HTTP. The client application will be responsible for issuing the HTTP requests as specified below. All HTTP requests will be POSTs passing in serialized JSON. All responses will be in JSON.
+
+The default return value of all requests will be in JSON. The JSON response will be structured as follows:
+On success:
+{{{
+#!js
+{
+  "success": "<value>",
+}
+}}}
+
+On failure:
+{{{
+#!js
+{
+  "error": <error>
+}
+}}}
+
+In the case of an error, the client a pplication will either throw an exception or return an error code, as appropriate. An error will only be returned in the cases where an error is specified for the methods below. A null result will usually be a success.
+
+=== Security concern ===
+
+Because of a potential security hole in how some browsers interpret JSON responses that are an array at the top-level, Lightning will always return a hash at the top level.
+
+== Client Identification ==
+
+The client '''must''' set the X-Client header to the appropriate value on '''all''' requests. If this is not set, then the client 'testing' will be used.
+
+This is a temporary process until proper authentication/authorization is added. More on this later.
+
+== Client-specific Service Aliases ==
+
+The client may specify service aliases that it can use when talking with Lightning. Each client may specify up to one alias per service. This alias will be used whenever Lightning uses a service name with the client (when responding to /api, for instance). The client may use the alias or the original name interchangeably.
+
+== Common situations ==
+
+* If a method is used for a URI that is not specified in this document, then a "405 Method Not Allowed" will be returned with the following response body:
+{{{
+#!js
+{
+  "error": "'<method>' not supported for '<uri>'"
+}
+}}}
+
+== [=#authnz Authentication Against and Authorization with a Service] ==
+
+The mechanism for allowing a user to authorize the client for a given service is called "authorization". The mechanism for allowing a user to authenticate to Lightning by using a service is called "authentication". Lightning provides support for authentication and authorization processes:
+* OAuth 1.0a (such as for LinkedIn)
+* OAuth 2.0 (such as for Facebook and Instagram)
+
+This process has the following steps:
+1. The client calls Lightning's [[Lightning/API/InitiateAuthorization|Retrieve the Authorization URI for a Service]] method, providing the redirect URI (explained below).
+1. The client redirects the user to this URI.
+1. The user authenticates within the service's space.
+1. Upon authentication with the service, the user chooses to authorize the client to access the user's information on that service.
+1. The service then redirects the browser to a URI on the client containing a set of parameters
+1. The client calls Lightning's [[Lightning/API/FinalizeAuthorization|Finalize Authorization for a Service]] with the redirect URI from the first point and all parameters provided to it by the service.
+1. Lightning converts the code into the long-term oauth token, looks up the user_id (if needed), and does the following:
+  * If that user_id on that service has already authorized that client, then the existing GUID will be returned.
+  * Otherwise, a new GUID will be generated and that will be returned.
+
+=== Redirect URI ===
+
+The client must provide a URI for the service to redirect the browser to after the authentication and authorization process has been completed (successfully or not). This URI must be passed in '''EXACTLY THE SAME''' to both authn/authz endpoints.
+
+It is expected that the handler for the redirect URI will turn around and call this POST method on Lightning acting as a transparent proxy. Upon receiving a good response from Lightning, then the client can either return a "Authorization successful" message to the user and/or make additional calls to that service through Lightning to retrieve information to present to the user.
+
+== GUIDs and the Keychain ==
+
+There are two possible ways to coordinate the use of authorizations between a client and Lightning. The difference between the methods is which side is responsible for keeping the authorizations within a keychain associated with a single user on the client side.
+
+The first method is what is currently implemented in Lightning - the client maintains the keychain. Each (client_name, service_name, service_user_id) triple in Lightning is assigned a GUID that is returned to the client. The client is then responsible for associating the various GUIDs with a client user. Then, when the client calls Lightning, it is responsible for passing along the appropriate GUID(s) to Lightning. It is also responsible for ensuring that the GUIDs provided all belong to the same client user.
+
+Another architectural option is to have Lightning manage the keychain of authorization tokens. This would require the following changes:
+1. The client chooses a GUID to identify each group of associated authorizations.
+1. Whenever a method or view is invoked, the keychain GUID is provided.
+1. Whenever an authorization occurs, the client is responsible for informing Lightning of which GUID should be associated with the authorization.
+  * If the authorization is for a known client user, then the GUID is provided when [[Lightning/API/FinalizeAuthorization|Finalize Authorization for a Service]] is called.
+  * If the authorization is not, then Lightning is responsible for returning the associated GUID, if it is known.
+    * If the GUID is not known, then Lightning would provide the client with a GUID. That GUID would be the keychain GUID going forward.
+
+There are pros and cons to both methods. The first method clarifies the authentication process. The second method reduces traffic when methods and views are invoked. Neither method is strictly superior.
+
+== Methods ==
+`/api`
+* [[Lightning/API/ListAllServices|List all Services]]
+* [[Lightning/API/ListAllAPIFunctions|List all functions for the specified Service]]
+* [[Lightning/API/InvokeAPIFunction|Invoke a function on a Service]]
+
+`/auth`
+* [[Lightning/API/InitiateAuthorization|Retrieve the Authorization URI for a Service]]
+* [[Lightning/API/FinalizeAuthorization|Finalize Authorization for a Service]]
+* [[Lightning/API/RetrieveAuthorization|Retrieve a specific authorization]]
+* [[Lightning/API/RevokeAuthorization|Revoke a specific authorization]]
+* [[Lightning/API/ActivateAuthorization|Activate a specific authorization]]
+
+`/status`
+* [[Lightning/API/CheckStatus|Check the status of authorizations]]
+
+`/view`
+* [[Lightning/API/ListAllViews|List all views]]
+* [[Lightning/API/InvalidateViews|Invalidate views]]
+* [[Lightning/API/CreateView|Create view]]
+* [[Lightning/API/ShowView|Show view definition]]
+* [[Lightning/API/InvokeView|Invoke view]]
+* [[Lightning/API/DeleteView|Delete view]]
+
+`/stream`
+* [[Lightning/API/RetrieveStream|Retrieve the stream]]
+
+* ~~[[Lightning/API/WriteData|Write data for a method]]~~ Deprecated 2013-10-30
+
+----
+
+=== [=#interval Interval methods] ===
+For interval methods, the returned value will be a list of data points at timestamps collected during that interval from which a delta can be computed.
+
+(Example responses for start=100 and end=200)
+{{{
+#!js
+{
+    'data': [
+        { 'timestamp': 200, 'num': 10 },
+        { 'timestamp': 100, 'num': 8 },
+    ]
+}
+}}}
+
+If the timestamp returned is the same as the start date, then the delta during that interval is 0.
+{{{
+#!js
+{
+    'data': [
+        { 'timestamp': 100, 'num': 8 }
+    ]
+}
+}}}
+
+If the timestamp returned is not the same as the start date, then Lightning started collecting data in the middle of that interval. Since the beginning of collection, there has been no change. However, Lightning has no knowledge of the value prior to that date. What happens here is client-dependent.
+{{{
+#!js
+{
+    'data': [
+        { 'timestamp': 150, 'num': 8 }
+    ]
+}
+}}}

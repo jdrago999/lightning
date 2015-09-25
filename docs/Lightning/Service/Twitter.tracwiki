@@ -1,0 +1,234 @@
+= Twitter =
+
+== GET Methods ==
+
+`GET /api/twitter/<method-name>`
+
+=== profile ===
+
+See [wiki:Lightning/Profile Profile]
+
+=== person_mentioned ===
+
+This is the person who mentioned on you the most. It takes a start and end, just like an interval method. It returns a [wiki:Lightning/Profile Profile] with an additional {{{num}}} element which has the number of times this person commented on you in this period. In the case of a tie, the most recent commenter will be returned. If no-one commented on you, then it will return {{{null}}}.
+
+There is no interval version of this method.
+
+Sample responses:'''
+* When no one commented on you:
+  {{{
+{
+  "success": null
+}
+}}}
+
+* When someone commented on you:
+{{{
+{
+  "bio": "Dreaming. Exploring. Living without regret.\r\n\r\nFollow me on twitter: @sue\r\n\r\nNew blog:  http://sue.jones..blogspot.com/",
+  "email": "",
+  "gender": "female",
+  "headline": null,
+  "name": "Sue Jones",
+  "num": 1,
+  "profile_link": "http://www.facebook.com/sue.jones",
+  "profile_picture_link": "https://graph.facebook.com/1234/picture",
+  "username": "crystal.yanjing"
+}
+}}}
+
+=== num_followers ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_followers_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_following ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_following_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_tweets ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_tweets_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_favorites ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_favorites_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_listed ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_listed_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_follow_requests ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_follow_requests_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_retweets ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_retweets_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_mentions ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_mentions_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_direct_messages ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_direct_messages_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== most_recent_activity ===
+
+The most recent activity is the "tip of the feed". See [wiki:Lightning/Feed Feed] for details.
+
+== POST Methods ==
+
+`POST /api/twitter/<method-name>`
+
+=== create_tweet ===
+
+Additional required parameters:
+{{{
+tweet=<tweet text>
+}}}
+
+Note - the tweet text must be **doubly** HTTP-encoded. Otherwise, '+' and ';' won't be handled properly. This is the responsibility of the client.
+
+For example:
+
+{{{
+# Probably incorrect, but you get the idea.
+post_data = 'tweet=' << URI.encode(tweet_text)
+}}}
+
+Returns:
+{{{
+{
+    'success': 'Posted tweet'
+}
+}}}
+
+=== favorite_tweet ===
+
+Additional required parameters:
+{{{
+tweet_id=<original tweet id>
+}}}
+
+=== unfavorite_tweet ===
+
+Additional required parameters:
+{{{
+tweet_id=<original tweet id>
+}}}
+
+=== retweet_tweet ===
+
+Additional required parameters:
+{{{
+tweet_id=<original tweet id>
+}}}
+
+=== reply_to_tweet ===
+
+Additional required parameters:
+{{{
+tweet=<tweet text>
+tweet_id=<original tweet id>
+}}}

@@ -1,0 +1,45 @@
+== Revoke a specific authorization ==
+
+=== Purpose ===
+
+To revoke a specific authorization.
+
+Note: For some APIs, such as Facebook, the client will need to provide an externally-visible URI as a callback for asynchronous authorization revocation. That URI will need to call this method.
+
+If the user is not found, then no action will occur. This method should be construed as "Ensure that all authorization for this user through this API has been revoked." This method is idempotent.
+
+=== Endpoint ===
+
+{{{DELETE /auth/<guid>}}}
+
+=== Inputs ===
+
+None
+
+=== Outputs ===
+
+200: Ok - If revocation is successful, with a response body of:
+{{{
+{
+    'success': 'Revocation successful'
+}
+}}}
+
+=== Errors ===
+
+* 404: Not Found - If the guid is not recognized, with a response body of:
+{{{
+{
+  "error": "GUID '<guid>' unknown"
+}
+}}}
+* 401: Not Authorized - If the client_user_id is not currently authorized against the requested service, with a response body of:
+{{{
+{
+    'error': 'User not authorized'
+}
+}}}
+
+=== Side Effects ===
+
+Data stored about that user from that API may be affected in some fashion. For example, Facebook requires that we delete all data for that user. Other APIs may require different things.

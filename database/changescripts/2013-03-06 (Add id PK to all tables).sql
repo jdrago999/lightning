@@ -1,0 +1,22 @@
+ALTER TABLE [dbo].[InflightAuthorization]
+    ADD [id] BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY
+
+ALTER TABLE [dbo].[Authorization]
+    ADD [id] BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY
+
+ALTER TABLE [dbo].[ExpiredAuthorization]
+    ADD [id] BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY
+
+ALTER TABLE [dbo].[UserData]
+    ADD [id] BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY
+
+ALTER TABLE [dbo].[GranularData]
+    DROP CONSTRAINT PK_GranularData
+ALTER TABLE [dbo].[GranularData]
+    ADD CONSTRAINT UK_GranularData UNIQUE NONCLUSTERED ([uuid] ASC, [method] ASC, [item_id] ASC)
+ALTER TABLE [dbo].[GranularData]
+    ADD [id] BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY
+
+ALTER TABLE [dbo].[View]
+    ADD [id] BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY
+

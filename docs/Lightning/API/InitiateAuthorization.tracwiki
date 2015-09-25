@@ -1,0 +1,46 @@
+== Retrieve the Authorization URI for an API ==
+
+=== Purpose ===
+
+This is the first of two steps to allow a user to authenticate against and authorize a client for a given service.
+
+Please read [[Lightning/API#authnz|Authentication Against and Authorization with a Service]] for an in-depth discussion of this process.
+
+=== Endpoint ===
+
+{{{GET /auth}}}
+
+=== Inputs ===
+
+* service - name of the service
+* redirect_uri - this is the URI in the client that the service will call once authorization is completed (successful or not).
+* any and all other parameters needed to the call to the service
+
+=== Outputs ===
+
+* 200: Ok - If the call is successful, and the body is:
+{{{
+{
+    'redirect': <uri>
+}
+}}}
+This is the URI that the client should 302 the web-browser to. It will encode everything the service needs to properly handle authentication and authorization.
+
+=== Errors ===
+
+* 404: Not Found - If the service name is not recognized, and a response body of:
+{{{
+{
+  "error": "Service '<service>' unknown"
+}
+}}}
+* 400: Bad Request - If any required input is missing with a response body of:
+{{{
+{
+    'error': "Missing parameters 'param1', 'param2'"
+}
+}}}
+
+=== Side Effects ===
+
+None

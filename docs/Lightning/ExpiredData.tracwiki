@@ -1,0 +1,67 @@
+== Description ==
+
+Data can be collected in a time period when an authorization from a service is valid. However, the authorization could become invalid (for any number of reasons) and the data collection be suspended until a valid authorization is returned.
+
+Lightning indicates this by adding the {{{expired_on}}} key where and when appropriate. This will be a Unix timestamp.
+* In a present-value method, the {{{expired_on}}} key will be added if the authorization is currently no longer valid.
+* In an interval-value method, the {{{expired_on}}} key will be added to each value if the authorization went invalid after that value was collected and before the next value in the interval. The next value in the list (if any) will be an implicit ending of the invalid period.
+
+== Examples ==
+
+=== Present-value ===
+
+Without expiration:
+{{{
+{
+    'num': 20
+}
+}}}
+This means that the daemon retrieved the number 20 for whatever request this is and that the authorization is currently valid (because present-value requests pull the tip of the heap).
+
+With expiration:
+{{{
+{
+    'num': 20,
+    'expired_on': 12345678
+}
+}}}
+
+This means that the daemon retrieved the number 20 for whatever request this is and that the authorization is currently invalid and it went invalid at 12345678.
+
+=== Interval-value ===
+
+Without expiration:
+{{{
+{
+    'data': [
+        { 'timestamp': 200, 'num': 10 },
+        { 'timestamp': 100, 'num': 8 },
+    ]
+}
+}}}
+
+This means that two values were collected for the interval requested, one at timestamp 100 (8) and one at timestamp 200 (10). The authorization was valid upon entering the interval requested and was valid throughout the interval.
+
+With expiration (example 1):
+{{{
+{
+    'data': [
+        { 'timestamp': 200, 'num': 10 },
+        { 'timestamp': 100, 'num': 8, 'expired_on': 130 },
+    ]
+}
+}}}
+
+This means there was a valid authorization at timestamp 100 when the value 8 was collected. The timestamp subsequently was noticed to be invalid at timestamp 130 (presumably a failed request, possibly to this endpoint or some other endpoint). The authorization became valid on or before timestamp 200 when the value 10 was collected. The authorization stayed valid until the end of the requested interval.
+
+With expiration (example 2):
+{{{
+{
+    'data': [
+        { 'timestamp': 200, 'num': 10, 'expired_on': 230 },
+        { 'timestamp': 100, 'num': 8 },
+    ]
+}
+}}}
+
+This means there was a valid authorization at timestamp 100 when the value 8 was collected. The authorization remained valid through timestamp 200 when the value 10 was collected. The timestamp subsequently was noticed to be invalid at timestamp 230 (presumably a failed request, possibly to this endpoint or some other endpoint). It remained invalid through the end of the requested interval.

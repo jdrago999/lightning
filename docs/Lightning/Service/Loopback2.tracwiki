@@ -1,0 +1,13 @@
+= Loopback2 =
+
+This is a service that exists for testing and verification purposes. It is used in the Lightning unit-tests and can be used by clients to determine functionality.
+
+== Methods ==
+
+=== time ===
+
+{{{
+{
+    'data': <the current time in seconds since the epoch as a string>
+}
+}}}

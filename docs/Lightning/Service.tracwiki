@@ -1,0 +1,38 @@
+= Supported Services =
+
+This is the list of services supported by Lightning and their methods. The format for calling these is generally:
+
+{{{
+GET /api/<service>/<method>
+}}}
+
+Different methods take different parameters:
+* All methods take the guid parameter (which can and usually is repeated).
+* Interval value methods take {{{start}}} and {{{end}}}, both values being [http://en.wikipedia.org/wiki/Unix_time unix time] timestamps.
+* Present value methods don't take any parameters at all.
+
+== Testing Services ==
+
+* [wiki:Lightning/Service/Loopback Loopback]
+* [wiki:Lightning/Service/Loopback2 Loopback2]
+
+== External Services ==
+
+* [wiki:Lightning/Service/Blogger Blogger]
+* [wiki:Lightning/Service/Etsy Etsy]
+* [wiki:Lightning/Service/Facebook Facebook]
+* [wiki:Lightning/Service/Flickr Flickr]
+* [wiki:Lightning/Service/Foursquare Foursquare]
+* [wiki:Lightning/Service/GooglePlus Google+]
+* [wiki:Lightning/Service/Instagram Instagram]
+* [wiki:Lightning/Service/LinkedIn LinkedIn]
+* [wiki:Lightning/Service/Reddit Reddit]
+* [wiki:Lightning/Service/RunKeeper RunKeeper]
+* [wiki:Lightning/Service/SoundCloud SoundCloud]
+* [wiki:Lightning/Service/Twitter Twitter]
+* [wiki:Lightning/Service/Vimeo Vimeo]
+* [wiki:Lightning/Service/WordPress WordPress]
+* [wiki:Lightning/Service/Youtube Youtube]
+
+
+* [wiki:Lightning/NewService Adding a Service]

@@ -1,0 +1,28 @@
+== Activate a specific authorization ==
+
+=== Purpose ===
+
+To activate a specific authorization previously registered.
+
+=== Endpoint ===
+
+{{{POST /auth/<guid>/activate}}}
+
+=== Inputs ===
+
+None
+
+=== Outputs ===
+
+* 200: Ok with a body of:
+{{{
+{ 'success': 'Scheduling successful' }
+}}}
+
+=== Errors ===
+
+* 404: Not Found - If the guid is invalid and/or cannot be located and/or belongs to a different client.
+
+=== Side Effects ===
+
+This will start the scheduling of jobs on the back-end.

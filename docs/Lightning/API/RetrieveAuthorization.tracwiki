@@ -1,0 +1,33 @@
+
+== Retrieve a specific authorization ==
+
+=== Purpose ===
+
+To retrieve a specific authorization previously registered.
+
+=== Endpoint ===
+
+{{{GET /auth/<guid>}}}
+
+=== Inputs ===
+
+None
+
+=== Outputs ===
+
+* 200: Ok - If the authorization exists with a body of:
+{{{
+{
+    'guid': '1efabc34-342525-eeef132',
+    'service_name': 'facebook',
+    'user_id': '1200124454'
+}
+}}}
+
+=== Errors ===
+
+* 404: Not Found - If the guid is invalid and/or cannot be located and/or belongs to a different client.
+
+=== Side Effects ===
+
+None

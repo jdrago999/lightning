@@ -1,0 +1,113 @@
+= Lightning Profile Method Call
+
+
+profile methods return the same fields.  Examples follow.
+
+
+Example for a LinkedIn Profile:
+{{{
+#!js
+{
+  "name": "Jane Doe",
+  "picture_link": "http://m3.licdn.com/mpr/mprx/0_AAAAA_ensterntu_lufwplfutsshnru-isulnruptwl",
+  "profile_link": "http://www.linkedin.com/pub/example-user/12/345/678",
+  "headline": "Engineer for Lightning",
+  "bio": "Something that makes you want to hire me", /* This should map to the 'summary' field on LinkedIn.  nil if this is unavailable */
+  "gender": null,  /* I'm open to debate on whether we should send along null fields, but if it makes no difference, send them */
+  "email": null
+}
+}}}
+
+Example for a Facebook (or instagram) Profile :
+
+{{{
+#!js
+{
+  "name": "Jane Doe",
+  "picture_link": "http://profile.ak.fbcdn.net/hprofile-ak-ash3/83724883_398873_837383_q.jpg",
+  "profile_link": "http://www.facebook.com/profile.php?id=12344",
+  "headline": null,
+  'bio': 'Something pithy.',
+  "gender": 'female',
+  "email": 'jane.doe@somewhere.com',
+  "username": 'jane.doe23'
+}
+}}}
+
+= Profile field mappings =
+
+||= Service =||= Field  =||= Where to find it =||
+{{{#!td rowspan=12
+**facebook**
+}}}
+|| bio || "About you" box, on the right side of your facebook info page ||
+|| first_name || First name on fb ||
+|| gender || Gender on fb ||
+|| last_name || Last name on fb ||
+|| maiden_name || Maiden name on fb ||
+|| middle_name || Middle name on fb ||
+|| headline || Nothing ||
+|| name || name section of fb ||
+|| username || The directory segment of your fb profile url.  For the profile url `http://www.facebook.com/example`, the username should be "example" ||
+|| profile_link || url to the facebook profile  ||
+|| profile_picture_link || Should be a link to your fb profile photo, as seen in the upper left-hand corner of your profile page ||
+|| email || the primary email address associated with your facebook account, as seen on your "Account settings" page on facebook ||
+{{{#!td rowspan=7
+**twitter**
+}}}
+|| bio      || the "bio" field of your profile settings page ||
+|| headline || N/A ||
+|| name || name section of twitter ||
+|| username || The directory segment of your twitter url.  For the twitter url `http://www.twitter.com/example`, the username should be "/example"  ||
+|| profile_link || url to the twitter profile  ||
+|| profile_picture_link || Should be a link to your twitter photo, as seen in the upper left-hand corner of your twitter page ||
+|| email || N/A ||
+{{{#!td rowspan=7
+**linkedin**
+}}}
+|| bio      || The summary section from your linkedin profile ||
+|| headline || headline from linked in profile, which is typically in the form "Some Job at Some Company", e.g: "Software Developer at Inflection" ||
+|| name || name section of LinkedIn ||
+|| username || The editable portion of your linkedin url, so if your linkedin url is: `http://www.linkedin.com/in//example`, your username is `/example` ||
+|| profile_link || url to the LinkedIn profile  ||
+|| profile_picture_link || url to the photo associated with your LinkedIn profile  ||
+|| email || return the primary email address with LinkedIn ||
+{{{#!td rowspan=7
+**instagram**
+}}}
+|| bio      || The bio section from your instagram profile ||
+|| headline || N/A, Actually there is no headline for instagram, so this would be always "null" ||
+|| name || name section of Instagram, e.g.: "John Smith" ||
+|| username || username that you use to login, e.g.: "johnsmith" ||
+|| profile_link || url to the instagram profile  ||
+|| profile_picture_link || url to the photo associated with your instagram profile  ||
+|| email || N/A (cannot get from your instagram API) ||
+{{{#!td rowspan=7
+**foursquare**
+}}}
+|| bio      || The bio section from your foursquare profile ||
+|| headline || N/A, Actually there is no headline for foursquare, so this would be always "null" ||
+|| name || name section of foursquare ||
+|| username || N/A, Actually there is no username for foursquare, so this would be always "null" ||
+|| profile_link || url to the foursquare profile  ||
+|| profile_picture_link || url to the photo associated with your foursquare profile  ||
+|| email || N/A ||
+
+
+
+`*` This field is not currently populated by lightning
+
+
+
+{{{#!comment
+Adding a new row to this table?  Use the following template
+--- cut below here ---
+{{{#!td rowspan=5
+**service name**
+}}}
+|| bio      || N/A ||
+|| headline || N/A ||
+|| username || N/A ||
+|| profile_picture_link || N/A ||
+|| email || N/A ||
+--- cut above here ---

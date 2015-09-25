@@ -1,0 +1,25 @@
+= Lightning Birth Method Call =
+
+birth methods return a Birth objects with the same fields for all services.
+
+Example of a Facebook Birth object:
+{{{
+#!js
+{
+  "age": 26,
+  "dob_day": 15,
+  "dob_month": 3,
+  "dob_year": 1987
+}
+}}}
+
+Example response for a Facebook birth method call where the user has no birthday listed:
+{{{
+#!js
+{
+  "age": null,
+  "dob_day": null,
+  "dob_month": null,
+  "dob_year": null
+}
+}}}

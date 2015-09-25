@@ -1,0 +1,89 @@
+= LinkedIn =
+
+== Methods ==
+
+=== profile ===
+
+See [wiki:Lightning/Profile Profile]
+
+=== most_recent_activity ===
+
+The most recent activity is the "tip of the feed". See [wiki:Lightning/Feed Feed] for details.
+
+=== num_recommendations ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_recommendations_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_first_connections ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_first_connections_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_second_connections ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_second_connections_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+=== num_connections_average ===
+{{{
+{
+    'num': <number>
+}
+}}}
+=== num_connections_average_interval ===
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== top_industries ===
+{{{
+{
+    'data': [
+        'Industry1',
+        'Industry2',
+        'Industry3',
+    ]
+}
+}}}
+
+Notes:
+* There may be less than 3 if the data warrants it.
+* The number of connections with Industry1 will be >= the number of connections for Industry2.
+* The number of connections with Industry2 will be >= the number of connections for Industry3.
+* There may be an Industry4 with the same number of connections as Industry3 which will not be shown. It is undeterminate which industry will be chosen for Industry3 in the case of a tie.

@@ -1,0 +1,31 @@
+= Blogger =
+
+== Methods ==
+
+=== profile ===
+
+Blogger has pretty extensive profiles, however they expose very little of their content via their API.  As such, we can only retrieve user ID, profile url and full name.  On top of that, due to what seems to be a bug, the full name field always seems to return "Unknown".  Lightning checks this value and returns an empty string in cases where the full name is "Unknown".
+
+See [wiki:Lightning/Profile Profile]
+
+
+=== num_posts===
+
+The number of blog posts you have written
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_posts_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}

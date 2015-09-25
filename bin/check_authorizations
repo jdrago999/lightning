@@ -1,0 +1,307 @@
+#!/usr/bin/env python
+"""Usage: check_authorizations ENVIRONMENT [--repair] [--repair-one=<guid>]
+
+Check the status of the Lightning authorizations. Verifies that all authorizations
+in the database have all the required jobs queued properly in redis.
+
+Arguments:
+ENVIRONMENT    environment name to check authorizations against [local, beta, preprod, or prod]
+
+Options:
+--repair              repair any jobless authorizations by queue'ing them in redis
+--repair-one=<guid>   repair one jobjess auth.
+"""
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+import fcntl
+from docopt import docopt
+from datetime import timedelta
+import json
+import logging
+from lightning import Lightning
+from lightning.datastore.sql import Authz
+from lightning.service.daemons import DAEMONS
+from lightning.utils import enum, get_config_filename, VERSION
+from prettytable import PrettyTable
+import pprint
+from twistedpyres import ResQ
+from twisted.internet import reactor, defer
+
+defer.setDebugging(True)
+
+logging.basicConfig(
+    level='INFO',
+    format='[%(asctime)s] (%(levelname)s) %(module)s.%(funcName)s:%(lineno)d %(message)s',
+    datefmt='%Y-%m-%d %I:%M:%S %p'
+)
+
+# Define Job Statuses:
+Status = enum(
+    QUEUED='Queued',
+    READY='Ready',
+    UNKNOWN='Unknown',
+)
+
+# Define Error States:
+Error = enum(
+    NONE='-',
+    REDIS_NOT_FOUND='No job found',
+    SQL_NOT_FOUND='Not in DB',
+)
+
+# Define Health Scores:
+SCORES = {
+    Status.QUEUED: 1.0,
+    Status.READY: 0.85,
+    Status.UNKNOWN: 0.0,
+}
+
+# Define alert thresholds:
+ALERTS = {
+    'local': 10,
+    'beta': 10,
+    'preprod': 10,
+    'prod': 10,
+}
+
+# Define status color codes:
+COLORS = {
+    Status.QUEUED: '\033[92m',  # Green
+    Status.READY: '\033[94m',  # Blue
+    Status.UNKNOWN: '\033[91m',  # Red
+    'End': '\033[0m',
+}
+
+table = PrettyTable(["Status", "Health", "Service", "Client", "GUID/UUID", "Error Message"])
+redis_data = {}
+authz_guids = []
+should_repair_all = False
+
+
+@defer.inlineCallbacks
+def check_authorizations(app):
+    """Check authorizations entry point.
+
+    We go through all the non-expired authorizations in the database and check
+    their status in redis. If we are unable to find the authorization in redis,
+    we enqueue it immediately.
+
+    Args:
+        app: An initialized Lightning object.
+    """
+    try:
+        authz = yield Authz.find(where=['expired_on_timestamp IS NULL'])
+        yield get_redis_data(app.redis)
+        score = 0
+        total = 0
+        for a in authz:
+            authz_guids.append(a.uuid)
+            service = app.services[a.service_name]
+            daemon_name = service.daemon_class.__name__
+            (status, health) = get_status(a.uuid, daemon_name)
+            error = get_error(a.uuid, daemon_name)
+            table.add_row([
+                status_with_color(status),
+                health,
+                a.service_name,
+                a.client_name,
+                a.uuid,
+                error,
+            ])
+
+            if daemon_name in DAEMONS:
+                daemon = DAEMONS[daemon_name]
+                daemon._delay = timedelta(minutes=1)  # Enqueue 1 minute later.
+                score += SCORES.get(status, 1)
+                total += 1
+            # Try and enqueue any auth that's in the REDIS_NOT_FOUND state.
+            if (repair_guid or should_repair_all) and error == Error.REDIS_NOT_FOUND:
+                if repair_guid == a.uuid or should_repair_all:
+                    daemon.resq = ResQ(app.redis, '%s:%s' % (app.config['redis_host'], app.config['redis_port']))
+                    for method in daemon._recurring:
+                        yield daemon.enqueue(app.config, a.uuid, method)
+
+        failure_rate = 100 - ((score / total) * 100)
+        threshold = ALERTS.get(app.config['environment'], 50)
+        if failure_rate > threshold:
+            logging.error('Daemon Error: %d percent Authorization failure rate exceeds %d percent.' % (failure_rate, threshold))
+
+        # Jobs that are in Redis, but weren't found in the DB.
+        # These should just get dropped by the worker next run.
+        for r in redis_data:
+            if r not in authz_guids:
+                (status, health) = get_status(r)
+                table.add_row([
+                    status_with_color(status),
+                    health,
+                    get_service(r),
+                    Error.NONE,
+                    r,
+                    get_error(r),
+                ])
+
+        print table.get_string(sortby="Service")
+    except Exception as e:
+        logging.error("Daemon Error: %s" % pprint.pformat(e))
+
+
+def get_data_from_job(job):
+    """Get uuid and method from provided pyres job.
+
+    Args:
+        job: A hash containing a pyres job.
+
+    Returns:
+        A dict containing the data from the pyres job.
+    """
+    try:
+        job = json.loads(job)
+        args = job['args']
+    except Exception as e:
+        print "Daemon Error: %s" % pprint.pformat(e)
+    uuid = args[1]
+    method = args[2]
+    service = job['class']
+    return {
+        'uuid': uuid,
+        'method': method,
+        'service': service,
+    }
+
+
+def set_job_status(job, status, error_message=None):
+    """Set the status of the provided job.
+
+    Args:
+        job: A hash containing a pyres job.
+        status: A string containing the status to set (from Status enum).
+        error_message: A string containing the pyres error message.
+    """
+    parsed_job = get_data_from_job(job)
+    uuid = parsed_job['uuid']
+    method = parsed_job['method']
+    service = parsed_job['service']
+    if uuid not in redis_data:
+        redis_data[uuid] = {}
+    if method not in redis_data[uuid]:
+        redis_data[uuid][method] = {
+            'status': status,
+            'error': error_message,
+            'service': service,
+        }
+
+
+@defer.inlineCallbacks
+def get_redis_data(redis):
+    """Get pyres job data from redis.
+
+    Check the various pyres queues and store the uuid, method, status for each
+    job.
+
+    Args:
+        redis: A redis connection object to grab data from.
+    """
+    # Get the items in Ready state.
+    # This is a job that's past its scheduled time and is waiting for a worker.
+    ready = yield redis.lrange('resque:queue:Service', 0, -1)
+    for r in ready:
+        set_job_status(r, Status.READY)
+    # Get the items in Queued state.
+    # This is a job that's normally queued and operating properly.
+    times = yield redis.zrange('resque:delayed_queue_schedule', 0, -1, withscores=False)
+    for time in times:
+        delayed = yield redis.lrange('resque:delayed:%s' % str(time), 0, -1)
+        for d in delayed:
+            set_job_status(d, Status.QUEUED)
+    # Get the items in the Failed/Unknown state.
+    failed = yield redis.lrange('resque:failed', 0, -1)
+    for f in failed:
+        parsed_failure = json.loads(f)
+        error_message = parsed_failure['backtrace'][-2]
+        job = json.dumps(parsed_failure['payload'])
+        if error_message != 'None':
+            logging.error('Daemon Error in Queue: %s' % error_message)
+        set_job_status(job, Status.UNKNOWN, error_message)
+
+
+def get_service(uuid):
+    """Get service name for redis job."""
+    for method in redis_data[uuid]:
+        return redis_data[uuid][method]['service']
+
+
+def get_status(uuid, daemon_name='LoopbackDaemon'):
+    """Get status message for a uuid."""
+    if daemon_name not in DAEMONS:
+        return (Error.NONE, Error.NONE)
+    if uuid not in redis_data:
+        return (Status.UNKNOWN, '0%')
+    score = 0
+    methods = redis_data[uuid]
+    for method in methods:
+        status = redis_data[uuid][method]['status']
+        score += SCORES.get(status, 0)
+    score = (score / len(redis_data[uuid]) * 100)
+    return (status, '%d%%' % score)
+
+
+def get_error(uuid, daemon_name='LoopbackDaemon'):
+    """Get error message for a uuid."""
+    error = Error.NONE
+    if daemon_name not in DAEMONS:
+        return Error.NONE
+    if uuid not in redis_data:
+        return Error.REDIS_NOT_FOUND
+    if uuid not in authz_guids:
+        error = Error.SQL_NOT_FOUND
+    methods = redis_data[uuid]
+    for method in methods:
+        if redis_data[uuid][method]['error']:
+            return redis_data[uuid][method]['error']
+    return error
+
+
+def status_with_color(status):
+    """Display status with color."""
+    if status in COLORS:
+        return COLORS.get(status) + status + COLORS['End']
+    return status
+
+
+def stop(_):
+    """Stop the script."""
+    reactor.stop()
+
+if __name__ == '__main__':
+    arguments = docopt(__doc__, version=VERSION)
+
+    # Check arguments
+    try:
+        config_filename = get_config_filename(arguments['ENVIRONMENT'])
+        should_repair_all = arguments['--repair']
+        repair_guid = arguments['--repair-one']
+    except Exception as exc:
+        logging.error('Problem parsing options: %s' % exc.message)
+        pprint.pprint(exc)
+        sys.exit(1)
+
+    # Grab a lock to make sure this script only runs once.
+    try:
+        f = open('/tmp/check_authorizations.lock', 'w')
+        fcntl.lockf(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except IOError:
+        logging.error('Script already running')
+        sys.exit(1)
+
+    import yaml
+    try:
+        config = yaml.load(open(config_filename))
+    except Exception as e:
+        logging.error('Problem loading config: %s' % e)
+        sys.exit(1)
+
+    app = Lightning.build(config).addBoth(check_authorizations).addBoth(stop)
+
+    reactor.run()

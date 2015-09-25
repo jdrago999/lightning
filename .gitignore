@@ -1,0 +1,27 @@
+*.sw?
+*.pyc
+.vagrant
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+
+# Dev Environment Files #
+dump.rdb
+.codeintel
+.coverage
+cover/*
+pylint/*
+_trial_temp
+
+# Build Tool #
+etc/build/.buildlog
+etc/build/.deploylog
+htmlcov

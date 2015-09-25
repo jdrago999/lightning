@@ -1,0 +1,173 @@
+= Facebook =
+
+== Methods ==
+
+=== profile ===
+
+See [wiki:Lightning/Profile Profile]
+
+=== most_recent_activity ===
+
+The most recent activity is the "tip of the feed". See [wiki:Lightning/Feed Feed] for details.
+
+=== person_commented ===
+
+This is the person who commented on you the most. It takes a start and end, just like an interval method. It returns a [wiki:Lightning/Profile Profile] with an additional {{{num}}} element which has the number of times this person commented on you in this period. In the case of a tie, the most recent commenter will be returned. If no-one commented on you, then it will return {{{null}}}.
+
+There is no interval version of this method.
+
+'''Note that only Photo comment would count, not wall comment. Sample responses:'''
+* When no one commented on you:
+  {{{
+{
+  "success": null
+}
+}}}
+
+* When someone commented on you:
+{{{
+{
+  "bio": "Dreaming. Exploring. Living without regret.\r\n\r\nFollow me on twitter: @crystal_yin\r\n\r\nNew blog:  http://yinyanjing.blogspot.com/",
+  "email": "",
+  "gender": "female",
+  "headline": null,
+  "name": "Crystal Yin Yanjing",
+  "num": 1,
+  "profile_link": "http://www.facebook.com/crystal.yanjing",
+  "profile_picture_link": "https://graph.facebook.com/658230805/picture",
+  "username": "crystal.yanjing"
+}
+}}}
+
+=== num_friends ===
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_friends_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== avg_friends_of_friends ===
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== avg_friends_of_friends_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== num_friend_requests ===
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_friend_requests_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== num_photos_tagged_in ===
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_photos_tagged_in_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== num_photos_uploaded ===
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_photos_uploaded_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== num_posts ===
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_posts_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== num_comments ===
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_comments_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}

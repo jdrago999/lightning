@@ -1,0 +1,29 @@
+= RunKeeper =
+
+== Methods ==
+
+=== profile ===
+
+See [wiki:Lightning/Profile Profile]
+
+
+=== num_friends===
+
+The number of friends you have.
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_friends_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}

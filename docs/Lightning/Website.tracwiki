@@ -1,0 +1,19 @@
+= Lightning Website Method Call =
+
+The website method returns a dictionary with the website keyed by "website".
+
+Example of a Facebook Website result:
+{{{
+#!js
+{
+  "website": "http://www.google.com"
+}
+}}}
+
+Example response for a Facebook website method call where the user has no website:
+{{{
+#!js
+{
+    "website": null
+}
+}}}

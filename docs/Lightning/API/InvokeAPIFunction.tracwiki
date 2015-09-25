@@ -1,0 +1,82 @@
+
+== Invoke a function on a Service ==
+
+=== Purpose ===
+
+To invoke a function against an API and receive the returned result.
+
+=== Endpoint ===
+
+{{{
+GET /api/<service>/<function>
+}}}
+
+=== Inputs ===
+
+* guid - this is one or more guids provided for by the client.
+
+For interval methods, the following parameters are required:
+* start - the UNIX timestamp which to bound the interval at the earlier
+* end - the UNIX timestamp which to bound the interval at the later.
+If both are set to 0, then nothing will be returned, but this is a legal set of parameters.
+
+All parameters that aren't required will be ignored. So, start and end may be passed in for all methods with no ill-effect.
+
+For POST methods (currently only supported by Twitter), additional parameters may be required. Please see the documentation for the method in question for further information.
+
+=== Outputs ===
+
+* 200: Ok - If the function succeeds
+
+The return value as defined for that function against that service. This function may not be a one-to-one mapping to functionality exposed by that service's official interface.
+
+The return value from a function invocation can be an error from the API invoked. This will be returned without inspection.
+
+=== Errors ===
+
+* 400: Bad arguments - If guids are provided for the same service:
+{{{
+{
+    'error': Multiple GUIDs '<guids>' provided for service '<service>'
+}
+}}}
+* 400: Bad arguments - If duplicate guids are provided:
+{{{
+{
+    'error': Duplicates GUID '<guid>' provided
+}
+}}}
+* 404: Not Found - If the service name is not recognized, with a response body of:
+{{{
+{
+  "error": "Service '<service>' unknown"
+}
+}}}
+* 404: Not Found - If the function name is not recognized, with a response body of:
+{{{
+{
+  "error": "Method '<method>' on '<service>' unknown"
+}
+}}}
+* 401: Not Authorized - If no guids are provided, with a response body of:
+{{{
+{
+    'error': 'GUIDs not provided'
+}
+}}}
+* 401: Not Authorized - If any of the guids are not recognized, with a response body of:
+{{{
+{
+    'error': 'GUID <guid> not recognized'
+}
+}}}
+* 401: Not Authorized - If the provided guid(s) do not resolve to a current authorization against the requested service, with a response body of:
+{{{
+{
+    'error': 'User not authorized'
+}
+}}}
+
+=== Side Effects ===
+
+This may save the results of the function invocation(s) to a data store for later retrieval.

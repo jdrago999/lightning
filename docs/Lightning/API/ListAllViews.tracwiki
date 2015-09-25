@@ -1,0 +1,33 @@
+== List all views ==
+
+=== Purpose ===
+
+To list the views defined within the API broker.
+
+=== Endpoint ===
+
+{{{GET /view}}}
+
+=== Inputs ===
+
+None
+
+=== Outputs ===
+
+* 200: Ok - Returns a body of the form:
+{{{
+{
+    'views': [
+        'view1',
+        'view2'
+    ]
+}
+}}}
+
+=== Errors ===
+
+None.
+
+=== Side Effects ===
+
+ None.

@@ -1,0 +1,18 @@
+USE [LIGHTNING]
+GO
+
+/****** Object:  Index [IX_StreamCache_uuid]    Script Date: 08/20/2013 11:48:00 ******/
+CREATE NONCLUSTERED INDEX [IX_StreamCache_uuid] ON [dbo].[StreamCache] 
+(
+	[uuid] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+GO
+
+
+/****** Object:  Index [IX_StreamCache_timestamp]    Script Date: 08/20/2013 11:48:06 ******/
+CREATE NONCLUSTERED INDEX [IX_StreamCache_timestamp] ON [dbo].[StreamCache] 
+(
+	[timestamp] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+GO
+

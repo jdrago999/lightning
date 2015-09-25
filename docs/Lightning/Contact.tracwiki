@@ -1,0 +1,48 @@
+= Lightning Contact Method Call =
+
+contact methods return a Contact object with the same fields for all services.
+
+There are some specific limitations for the data we can return from each service.
+1. Facebook does not give us {{{region}}} or {{{phone_numbers}}}.
+2. LinkedIn does not give us a {{{city}}} or {{{state}}}.
+3. Currently, we will only return US phone numbers LinkedIn (this may be changed in a later ticket).
+
+Example of a Facebook Contact object:
+{{{
+#!js
+{
+  "city": "Redwood City",
+  "country_code": "us",
+  "phone_numbers": null,
+  "region": null,
+  "state": "CA"
+}
+}}}
+
+Example of a LinkedIn Contact object:
+{{{
+#!js
+{
+  "city": null,
+  "country_code": "us",
+  "phone_numbers": [
+    {
+      "phone_number": "9545551234"
+    }
+  ],
+  "region": "San Francisco Bay Area",
+  "state": null
+}
+}}}
+
+Example response for a Facebook or LinkedIn contact method call where the user has no contact information:
+{{{
+#!js
+{
+  "city": null,
+  "country_code": null,
+  "phone_numbers": null,
+  "region": null,
+  "state": null
+}
+}}}

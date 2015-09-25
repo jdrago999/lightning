@@ -1,0 +1,46 @@
+= Lightning Console =
+A console that can be used to test the various responses of [[Lightning]], the Python application that used to talk to social networks. (Note: currently only supports latest Chrome/Firefox).
+
+== Accessing the Console ==
+
+To access the hosts file:
+=== Windows ===
+Open up your hosts file according to http://helpdeskgeek.com/windows-7/windows-7-hosts-file/
+=== *nix/Mac ===
+Open a terminal and type
+{{{sudo nano /etc/hosts}}}
+
+In your open hosts file, add the entry for the environment you'd like
+
+To go against beta, it'd be:
+{{{192.168.49.89 lg-beta.yoursite.com}}}
+
+To go against preprod, it'd be:
+{{{192.168.49.10 lg-pre.yoursite.com}}}
+
+To go against prod, it'd be:
+{{{10.0.0.1 www.example.com}}}
+
+Hit Ctrl-X, then enter Y at the prompt and hit Enter to save your changes.
+You can disable the lightning-console by adding a # sign in front of the line in your /etc/hosts and enable it by removing the pound sign.
+If using Google Chrome, you may need to clear your cache to see your changes reflected.
+
+== Current features ==
+* Make basic requests such as /api and /view
+* Auth supported for all services
+* Invoking present value methods against auth'd services.
+* Invoking views which contain single and multiple services.
+* Raw Request input allows any arbitrary GET request against lightning to be invoked. Also, shows exactly what request is being sent to lightning for all methods.
+* Invoking interval methods against auth'd services and views.
+
+== Developer Notes ==
+* Steps to run the console
+ * Have [[Lightning]] running.
+
+ {{{ ./bin/lightning local }}}
+ * Start the console (default port 8000).
+
+ {{{ ./bin/console local }}}
+ * Load httpd.conf in the console subdirectory in your Apache instance. (This sets up id.site to redirect to 127.0.0.1:8000 which is needed so our auth requests can succeed.)
+ * Map 127.0.0.1 to lg-local.yoursite.com in your /etc/hosts
+ * Visit https://lg-local.inlection.net/ and you should see the console.

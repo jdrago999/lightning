@@ -1,0 +1,48 @@
+==  Retrieve the stream (aka timeline or feed) ==
+
+=== Purpose ===
+
+To retrieve the stream for a set of GUIDs/services.
+
+=== Endpoint ===
+
+{{{GET /stream/<type>}}}
+
+=== Inputs ===
+
+* guid - the authorizations. This can be specified multiple times and must be specified at least once.
+* <type> - <type> can optionally be supplied in the URL (ex: stream/friends) to filter the type of events returned. (Currently supported stream types are: "friends" and "photos_uploaded")
+* service - service name(s). This can be specified multiple times or zero times. If unspecified, then the service(s) for the GUIDs will be used. If specified, can be used to limit the services from the GUIDs.
+* num - the number of entries to return. This defaults to 10.
+* timestamp - a UNIX timestamp used to anchor the request. This defaults to now.
+* forward - the direction to read the stream. Forward is forwards in time. Backwards is not. This defaults to 0 (backwards).
+* echo - Whether or not to include echo (non-authorization user-generated data). This defaults to 1 (yes, include everything).
+
+=== Outputs ===
+
+* 200: Ok - Returns a body of the form:
+{{{
+{
+    'data': [
+        {
+          <Feed object>
+        }
+    ]
+}
+}}}
+
+Feed object is described in Lightning/Feed
+=== Errors ===
+
+* If no GUIDs provided, then a 400 Bad Argument with error="No GUIDs provided"
+* If any GUIDs are not recognized, then a 400 Bad Argument with error="Unknown GUIDs provided"
+* If multiple GUIDs are provided for the same service, then a 400 Bad Argument with error="Multiple GUIDs for one service provided"
+* If a service name is provided that is not recognized, then a 404 Not Found with error="Service '%s' unknown"
+* If a num is provided that is not a number, then a 400 Bad Argument with error "Bad value for 'num'"
+* If a timestamp is provided that is not a number, then a 400 Bad Argument with error "Bad value for 'timestamp'"
+* If a forward is provided that is not a number, then a 400 Bad Argument with error "Bad value for 'forward'"
+* If a type is provided that is not a supported, then a 400 Bad Argument with error "Stream type 'foo' unknown"
+
+=== Side Effects ===
+
+ None.

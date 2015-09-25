@@ -1,0 +1,9 @@
+== '''Echo Data-points''' ==
+* '''Category 1: "Person who X'ed you the most"'''
+   * Response structure
+     * To Be Filled by Rob (something like [wiki:Lightning/Profile Profile] + number times this person did X)
+   * If no one have X'ed on you during that period, return "None - 0 X's"
+   * If there is no one person who X'ed the most, select the most recent person that X'ed
+
+
+== '''Notes''' ==

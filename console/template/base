@@ -1,0 +1,92 @@
+{% extends 'root' %}
+
+{% block title %}Lightning Console{% end %}
+{% block body %}
+    <div class="span4 offset2">
+      <h2>Basic Methods</h2>
+      <ul>
+      {% for path in ['api', 'view'] %}
+        <li><a href='/?path={{ url_escape(path) }}'>/{{ path }}</a></li>
+      {% end %}
+      </ul>
+      <h2>Authorization</h2>
+      {% for service in sorted(services) %}
+        {% if service not in authed_services.keys() %}
+        <p>
+          <label class="checkbox" for="auth_{{ service }}">{{ service }}
+          <input type="checkbox" id="auth_{{ service }}" onclick="return redirect('auth/{{ service }}')" />
+          </label>
+        </p>
+        {% end %}
+        {% if service in authed_services.keys() %}
+        <p>
+          <label class="checkbox" for="auth_{{ service }}">{{ service }}
+          <input type="checkbox" id="auth_{{ service }}" onclick="return redirect('authclear/{{ service }}')" checked="checked" />
+          </label>
+        </p>
+        {% end %}
+      {% end %}
+      <h2>Interval</h2>
+      <label for="start">Start Time<br/>
+        <input type="text" id="start" class="interval"/>
+      </label>
+      <label for="end">End Time<br />
+        <input type="text" id="end" class="interval"/>
+      </label>
+      {% if views %}
+        <h2>Views</h2>
+        <ul>
+        {% for view in views %}
+          <li><a class="view" href="/?path={{ url_escape('view/%s/invoke?%s' % (view, guid_str)) }}">{{ view }}</a></li>
+        {% end %}
+        </ul>
+      {% end %}
+      {% if authed_services %}
+        <h2>Authorized Methods</h2>
+        {% for service in sorted(authed_services) %}
+          <h3>{{ service }}</h3>
+          <ul>
+            {% for method in sorted(methods(service).keys()) %}
+            <li><a href="/?path={{ url_escape('api/%s/%s?guid=%s' % (service, method, authed_services[service])) }}">{{ method }}</a></li>
+            {% end %}
+          </ul>
+        {% end %}
+      {% end %}
+    </div>
+  <div class="span6">
+    <h1>
+      <a href="/">⚡ lightning console</a>
+    </h1>
+    <h2>Raw Request</h2>
+    <form action="/" method="GET">
+      <select id="method" name="method" style="width:90px;display:inline">
+        <option value="DELETE">DELETE</option>
+        <option value="GET" selected>GET</option>
+        <option value="POST">POST</option>
+        <option value="PUT">PUT</option>
+      </select>
+      <label for="path" style="display:inline">lightning/
+        <input type="text" id="path" name="path" style="width:350px;display:inline"/>
+      </label>
+      <br />
+      <label for="postdata" style="display:inline">POST Data
+        <textarea id="postdata" name="postdata" style="width: 430px; height: 200px"></textarea>
+      </label>
+      <br />
+      <input type="submit" class="btn" value="Request" />
+    </form>
+      {% if val %}
+      <h2>Response</h2>
+      <table border="1">
+        <tr>
+          <th>Status</th>
+          <th>Response</th>
+        </tr>
+        <tr>
+          <td>{{ val['status'] }}</td>
+          <td><pre><code>{{ dumps(loads(val['content']), indent=2, sort_keys=True) }}</code></pre></td>
+        </tr>
+      </table>
+    {% end %}
+</div>
+{% end %}

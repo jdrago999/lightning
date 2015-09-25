@@ -1,0 +1,40 @@
+== Show view definition ==
+
+=== Purpose ===
+
+To show the definition of a given view.
+
+=== Endpoint ===
+
+{{{GET /view/<name>}}}
+
+=== Inputs ===
+
+None.
+
+=== Outputs ===
+
+* 200: Ok - Returns the following structure:
+{{{
+#!js
+{
+    'definition': [
+        {
+            'service': 'facebook',
+            'method': 'photos'
+        },
+        {
+            'service': 'facebook',
+            'method': 'profile'
+        }
+    ]
+}
+}}}
+
+=== Errors ===
+
+* 404: Not Found - If a view name for a known API is not recognized.
+
+=== Side Effects ===
+
+None.

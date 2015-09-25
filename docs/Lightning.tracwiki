@@ -1,0 +1,55 @@
+= Lightning =
+
+This is the project page for Lightning, a service related to third-party APIs.
+
+== Description ==
+
+Lightning is a service that acts as a broker to other APIs. These will be social network / informational APIs, such as Facebook, LinkedIn, and Twitter. The goal is to provide a single place for all APIs that clients can use to be interfaced with.
+
+Lightning is written in Python on Cyclone/Twisted.
+
+== Types of Datapoints ==
+
+Types of data points in Lightning:
+* Multi-service
+  * Profile
+  * Stream/Timeline (includes Most Recent Activity, aka MRA)
+  * Education
+  * Work
+  * Skills
+  * Website
+* Numerical (with and without interval)
+
+The multi-service data points return a very specific hash structure that's been negotiated between Lightning it's client and is consistent across all the services. So, if you ask for a profile or a MRA, you will get a hash with exactly the same keys regardless of whether it's Facebook, LinkedIn, a service we haven't implemented yet.
+
+The numerical datapoints also have a very specific structure which is common across all services, but the actual data point we provide may or may not have additional bits of information (such as facebook/avg_friends_of_friends providing additional context to how many friends we were able to query).
+
+== Lightning Consumer Documentation ==
+* [wiki:Lightning/API API] - Getting started consuming the Lightning API
+* [wiki:Lightning/Console Console] - Used to test Lightning responses
+* [wiki:Lightning/Glossary Glossary]
+* Data structures
+  * [wiki:Lightning/Profile Profile]
+  * [wiki:Lightning/Birth Birth]
+  * [wiki:Lightning/Contact Contact]
+  * [wiki:Lightning/Education Education]
+  * [wiki:Lightning/Work Work]
+  * [wiki:Lightning/Skills Skills]
+  * [wiki:Lightning/Recommendations Recommendations]
+  * [wiki:Lightning/Website Website]
+  * [wiki:Lightning/Stream Stream]
+  * [wiki:Lightning/Echo Echo]
+  * [wiki:Lightning/ExpiredData Handling Expired Data or Interval Data]
+* [wiki:Lightning/Errors Errors]
+* [wiki:Lightning/RateLimits Rate Limits]
+
+== LG Developers ==
+
+* [wiki:Lightning/PythonConcepts Python Concepts]
+* [wiki:Lightning/Service Services]
+  * [wiki:Lightning/NewService Adding a Service]
+* [wiki:Lightning/Testing Testing]
+* [wiki:Lightning/InternalStructure Internal Structure]
+
+== Historical ==
+* [wiki:Lightning/Requirements Requirements]

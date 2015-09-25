@@ -1,0 +1,66 @@
+#!/usr/bin/env python
+"""Usage: worker ENVIRONMENT [--queue=NAME] [--log=LOGLEVEL] [--redis=SERVER] [--record]
+       worker ENVIRONMENT [--queue=NAME] [--log=LOGLEVEL] [--redis=SERVER]
+                          [--play] [--filter] [--simulate-errors]
+       worker ENVIRONMENT [--queue=NAME] [--log=LOGLEVEL] [--redis=SERVER]
+                          [--loadtest] [--simulate-errors]
+
+Run a Lightning worker that processes jobs in the redis queue.
+
+Arguments:
+ENVIRONMENT         environment name to run worker against [dev, local, beta, preprod, or prod]
+
+Options:
+--queue=NAME        queue name to process jobs against [default: Service]
+--log=LOGLEVEL      logging level for worker [default: error]
+--redis=SERVER      redis server to fetch queue from [default: localhost:6379]
+--record            record responses to file
+--play              playback responses from file
+--filter            filter responses (for load testing)
+--loadtest          enable loadtesting mode (forces --play and --filter to true)
+--simulate-errors   simulate delays and errors in responses (for load testing)
+"""
+import logging
+import os
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from docopt import docopt
+from lightning.service.daemons import DAEMONS  # Pre-load all the daemon classes
+from lightning.datastore.sql import DatastoreSQL
+from lightning.utils import get_config_filename, VERSION
+from twisted.internet import reactor
+from twistedpyres import Worker
+
+if __name__ == '__main__':
+    arguments = docopt(__doc__, version=VERSION)
+
+    logging.basicConfig(
+        level=arguments['--log'].upper(),
+        format='[%(asctime)s] (%(levelname)s) %(module)s.%(funcName)s:%(lineno)d %(message)s',
+        datefmt='%Y-%m-%d %I:%M:%S %p'
+    )
+
+    try:
+        import yaml
+        config_filename = get_config_filename(arguments['ENVIRONMENT'])
+        config = yaml.load(open(config_filename))
+    except Exception as e:
+        print 'Error loading config: %s' % e.message
+        config = {}
+
+    datastore = DatastoreSQL.connect(config.get('sql_connection', 'dsn=SQLServer;uid=fakeuser;pwd=fakepassword;database=fakedb;driver={SQL Server Native Client 10.0}'))
+
+    Worker.run(
+        arguments['--queue'],
+        arguments['--redis'],
+        DAEMONS,
+        datastore,
+        arguments['--record'],
+        arguments['--play'] or arguments['--loadtest'],
+        arguments['--filter'] or arguments['--loadtest'],
+        arguments['--simulate-errors']
+    )
+
+    logging.info('Lightning worker started')
+    reactor.run()

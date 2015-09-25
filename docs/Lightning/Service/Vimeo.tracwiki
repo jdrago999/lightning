@@ -1,0 +1,179 @@
+= Vimeo =
+
+== Methods ==
+
+=== profile ===
+
+See [wiki:Lightning/Profile Profile]
+
+
+=== num_albums===
+
+The number of albums you have created.
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_albums_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== num_channels ===
+
+The number of channels you have created.
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_channels_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== num_contacts ===
+
+The number of contacts you have.
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_contacts_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== num_groups===
+
+The number of group you are a member of.
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_groups_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== num_likes ===
+
+The number of videos you have liked.
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_likes_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+=== num_uploads===
+
+The number of things you have uploaded.
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_uploads_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+
+=== num_videos ===
+
+The number of videos you have uploaded.
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_videos_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}
+
+*Note: I am unsure what the difference is between num_videos and num_uploads is, however vimeo tracks them separately.
+
+=== num_videos_appears_in ===
+
+The number of videos you appear in
+
+{{{
+{
+    'num': <number>
+}
+}}}
+
+=== num_videos_appears_in_interval ===
+
+{{{
+{
+    'data': [
+        { 'timestamp': <timestamp1>, 'num': <number1> },
+        { 'timestamp': <timestamp2>, 'num': <number2> },
+    ]
+}
+}}}

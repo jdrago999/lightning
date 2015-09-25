@@ -1,0 +1,31 @@
+This is the checklist for adding a new service in Lightning.
+
+1. Copy skeleton files over
+  * {{{utils/service_skeleton.py}}} to {{{lightning/service/<name>.py>}}}
+  * {{{utils/service_test_skeleton.py}}} to {{{lightning/test/service/test_<name>.py>}}}
+  * Globally replace (using facebook as an example):
+    * AUTHVER with 1 or 2
+    * SERVICENAME with 'facebook'
+    * SERVICE with 'Facebook'
+    * ID / SECRET with the right values for each environment
+    * DOMAIN with the root domain
+1. Copy the handle_response from either Facebook or LinkedIn (depending on if you're OAuth 1 or 2)
+1. Copy the following from either Facebook or Twitter:
+  * {{{start_authorization}}}
+  * {{{finish_authorization}}}
+  * {{{revoke_authorization}}}
+  * {{{service_revoke_authorization}}}
+1. Add the service to:
+  * {{{lightning/service/web.py}}}
+  * {{{lightning/service/daemons.py}}}
+1. Start up the console and work through all issues with authorization
+1. Get the profile up and running
+1. Get a single method up and running
+  * Ideally, this is a method that requires paging so that {{{request_with_paging}}} is written
+1. Get the tests up and running
+  * You will have to update {{{lightning/test/handlers/test_api.py}}}
+  * Getting test_authorize for the new service up will require parsing the HTML of the login form. Yes, this is annoying.
+1. Get the feed up and running
+  * This is required for {{{most_recent_activity}}} to work
+1. Add it to [wiki:Lightning/Service]
+1. Submit and bask in the accolades of your adoring public.

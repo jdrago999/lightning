@@ -1,0 +1,52 @@
+This page describes the internal structure of [wiki:Lightning].
+
+== Handlers ==
+
+The web front-end of [wiki:Lightning] is implemented with Twisted handlers. There are the following major endpoints:
+
+* /api
+* /auth
+* /view
+* /stream
+* /data
+
+These handlers do the following:
+* Read the HTTP parameters
+* Determine which service object(s) to use
+* Determine which method(s) on those objects to call
+* Delegate to the method(s) and capture the result(s)
+* Marshal those result(s) into an HTTP response
+
+== Services ==
+
+Under the hood, all functionality is implemented by service objects. These objects wrap the knowledge of how to communicate with a given service (such as Facebook or Twitter).
+
+A Service is broken into two parts - the Web and the Daemon.
+
+The base class implements the following:
+* name - attribute indicating the Lightning name for this service (facebook, linkedin, etc)
+* endpoint_url - attribute used in {{{request()}}} as the default base_url
+* handle_response() - method used to determine if a response is viable. Called in the callback from {{{request()}}}
+* app_info - attribute which is a dict where keys are the environment names and values are dicts with keys of app_id and app_secret.
+
+If the service implements a timeline or feed, it must provide the following:
+* feed_url() - method returning a path for the feed
+* get_feed_limit() - method returning a dict with URL parameters for limiting the feed's response
+* get_feed_timestamp() - method returning a dict with URL parameters for setting the feed's timestamp range
+* parse_post() - method given a post from the feed and which must return a dict in the appropriate feed response.
+
+OAuth1 services must implement the following attributes:
+* oauth_version
+* oauth_signature_method
+
+The Daemon is the side of the service object that runs asynchronously and collects data for use by the Web. It must implement:
+* serialize_value() - method that knows how to serialize the values collected by the @recurring methods.
+
+The Web must implement the following:
+* start_authorization() - method that must return a URL to redirect to for the start of authorization
+* finish_authorization() - method that must finalize authorization and returns an Authorization object
+* revoke_authorization() - method that revokes an authorization when initiated from the client
+* service_revoke_authorization() - method that revokes an authorization when initiated from the service
+* daemon_class - attribute that holds a link to the associated Daemon class
+* permissions - optional attribute containing a dict keyed by client names with values being a dict with URL params setting appropriate permissions on that service.
+*
